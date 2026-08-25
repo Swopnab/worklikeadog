@@ -1,0 +1,149 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "notes": "Each project has verified status, GitHub evidence, and rated bullets. Only VERIFIED projects are auto-selected for resumes. BLACKLISTED projects must NEVER appear anywhere.",
+    "blacklisted": ["Rock-Paper-Scissor"]
+  },
+  "projects": [
+    {
+      "id": "swopmobile",
+      "display_name": "SwopMobile — JWT Authentication, RBAC & AI Workspace",
+      "subtitle": "Full-Stack Authentication and Multi-App Platform",
+      "status": "verified",
+      "github_repo": "Swopnab/JWT-auth-service-plus-RBAC",
+      "years": "2025–2026",
+      "tech_stack": ["JavaScript", "Cloudflare Workers", "Hono", "D1", "Flask", "Ollama"],
+      "categories": ["security", "backend", "ai", "cloud", "full-stack"],
+      "quality_tier": 1,
+      "bullets": [
+        {
+          "text": "Built a serverless authentication platform supporting 3 RBAC roles with JWT access tokens, refresh-token rotation, protected routes, and per-user data isolation using Cloudflare Workers and D1.",
+          "verified": true,
+          "xyz_metrics": ["3 RBAC roles", "JWT access tokens", "refresh-token rotation", "per-user data isolation"]
+        },
+        {
+          "text": "Improved account security with PBKDF2-SHA256 password hashing, 15-minute access tokens, tab-scoped sessions, and server-side permission enforcement.",
+          "verified": true,
+          "xyz_metrics": ["PBKDF2-SHA256", "15-minute access tokens", "tab-scoped sessions"]
+        },
+        {
+          "text": "Integrated Zabum AI using Flask, Ollama, and Llama 3.2 with authenticated chat history, persistent memory, and permission-based access.",
+          "verified": true,
+          "xyz_metrics": ["Flask", "Ollama", "Llama 3.2", "authenticated chat history"]
+        }
+      ],
+      "keywords": ["JWT", "RBAC", "authentication", "serverless", "Cloudflare", "security", "AI", "Flask", "JavaScript"]
+    },
+    {
+      "id": "cybersteer",
+      "display_name": "CyberSteer — Hand-Controlled Racing Game",
+      "subtitle": "Computer Vision / Browser Game",
+      "status": "verified",
+      "github_repo": "Swopnab/Hand-controlled-racing-simulation",
+      "years": "2026",
+      "tech_stack": ["JavaScript", "HTML5 Canvas", "Google MediaPipe", "CSS3"],
+      "categories": ["computer-vision", "frontend", "games", "ml"],
+      "quality_tier": 1,
+      "bullets": [
+        {
+          "text": "Built a real-time browser racing game by mapping 21 MediaPipe hand landmarks into left, center, and right steering controls.",
+          "verified": true,
+          "xyz_metrics": ["21 MediaPipe hand landmarks", "real-time", "browser-based"]
+        },
+        {
+          "text": "Implemented procedural traffic, AABB collision detection, smooth steering, and speed progression from 50 to 100 mph with persistent high scores.",
+          "verified": true,
+          "xyz_metrics": ["AABB collision detection", "50 to 100 mph speed progression", "procedural traffic"]
+        }
+      ],
+      "keywords": ["MediaPipe", "computer vision", "HTML5 Canvas", "JavaScript", "real-time", "machine learning", "browser game"]
+    },
+    {
+      "id": "aaura-v1",
+      "display_name": "AAURA-V1 — Advanced AI-Utilized Responsive Assistant",
+      "subtitle": "Full-Stack AI Application",
+      "status": "verified",
+      "github_repo": "Swopnab/Zabum-AI",
+      "years": "2024",
+      "tech_stack": ["Python", "Django", "React", "TypeScript", "AWS", "OpenAI API"],
+      "categories": ["ai", "full-stack", "backend", "cloud"],
+      "quality_tier": 1,
+      "bullets": [
+        {
+          "text": "Built a full-stack AI assistant with Django REST Framework, React, JWT authentication, and OpenAI API integration.",
+          "verified": true,
+          "xyz_metrics": ["Django REST Framework", "React", "JWT authentication", "OpenAI API"]
+        },
+        {
+          "text": "Enabled secure cloud file storage and access control using AWS S3 and IAM.",
+          "verified": true,
+          "xyz_metrics": ["AWS S3", "IAM", "cloud file storage"]
+        }
+      ],
+      "keywords": ["AI", "Django", "React", "TypeScript", "AWS", "OpenAI", "REST API", "full-stack", "Python"]
+    },
+    {
+      "id": "personal-job-tracker",
+      "display_name": "Personal Job Tracker",
+      "subtitle": "Job Application Tracking Web App",
+      "status": "verified",
+      "github_repo": "Swopnab/Personal-Job-Tracker-app",
+      "years": "2025",
+      "tech_stack": ["JavaScript", "HTML", "CSS", "GitHub Pages"],
+      "categories": ["frontend", "productivity"],
+      "quality_tier": 2,
+      "bullets": [
+        {
+          "text": "Built a responsive web app for tracking companies, job roles, and application statuses using vanilla JavaScript.",
+          "verified": true,
+          "xyz_metrics": ["vanilla JavaScript", "responsive", "local storage persistence"]
+        },
+        {
+          "text": "Deployed the application through GitHub Pages with reusable front-end components and persistent browser-based data.",
+          "verified": true,
+          "xyz_metrics": ["GitHub Pages deployment", "reusable components", "browser-based persistence"]
+        }
+      ],
+      "keywords": ["JavaScript", "HTML", "CSS", "GitHub Pages", "web app", "frontend"]
+    }
+  ],
+  "conditional_projects": [
+    {
+      "id": "zabum-ai",
+      "display_name": "Zabum AI Assistant",
+      "status": "exposure",
+      "github_repo": "Swopnab/Zabum-AI",
+      "notes": "Overlaps with AAURA-V1. Include only if AAURA-V1 already selected and job requires additional AI evidence."
+    },
+    {
+      "id": "my-react-blog",
+      "display_name": "React Blog",
+      "status": "exposure",
+      "github_repo": "Swopnab/my-react-blog",
+      "notes": "Lightweight project. Only include if frontend-focused role and stronger projects not available."
+    },
+    {
+      "id": "music-player",
+      "display_name": "Music Player",
+      "status": "exposure",
+      "github_repo": "Swopnab/Music-Player",
+      "notes": "Lightweight Python/web project. Low priority."
+    },
+    {
+      "id": "website",
+      "display_name": "Personal Website",
+      "status": "exposure",
+      "github_repo": "Swopnab/Website",
+      "notes": "Portfolio site. Include only if portfolio/web design role."
+    }
+  ],
+  "blacklisted_projects": [
+    {
+      "id": "rock-paper-scissor",
+      "display_name": "Rock-Paper-Scissor",
+      "github_repo": "Swopnab/Rock-Paper-Scissor",
+      "reason": "HARD BLACKLIST — trivial project, permanently excluded from all resumes, answers, and recommendations.",
+      "status": "PERMANENTLY_BLACKLISTED"
+    }
+  ]
+}

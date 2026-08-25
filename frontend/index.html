@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobAgent — AI-Powered Job Application Agent</title>
+  <meta name="description" content="Local-first autonomous job application agent. Discovers jobs, tailors your resume, and applies — with you always in control." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/main.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Left Sidebar -->
+    <aside id="sidebar">
+      <div id="sidebar-brand">
+        <div id="agent-icon" aria-label="JobAgent">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="28" height="28" rx="8" fill="#5B5BD6"/>
+            <circle cx="14" cy="10" r="5" fill="white" opacity="0.9"/>
+            <rect x="6" y="17" width="16" height="2" rx="1" fill="white" opacity="0.7"/>
+            <rect x="9" y="21" width="10" height="2" rx="1" fill="white" opacity="0.5"/>
+            <circle cx="11" cy="10" r="1.2" fill="#5B5BD6"/>
+            <circle cx="17" cy="10" r="1.2" fill="#5B5BD6"/>
+          </svg>
+        </div>
+        <span id="brand-name">JobAgent</span>
+      </div>
+
+      <nav id="sidebar-nav" aria-label="Main navigation">
+        <button class="nav-item active" data-page="dashboard" id="nav-dashboard">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+            <rect x="2" y="2" width="7" height="7" rx="1.5"/>
+            <rect x="11" y="2" width="7" height="7" rx="1.5"/>
+            <rect x="2" y="11" width="7" height="7" rx="1.5"/>
+            <rect x="11" y="11" width="7" height="7" rx="1.5"/>
+          </svg>
+          Dashboard
+        </button>
+        <button class="nav-item" data-page="applications" id="nav-applications">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M4 6h12M4 10h8M4 14h10"/>
+          </svg>
+          Applications
+          <span class="nav-badge" id="badge-applications"></span>
+        </button>
+        <button class="nav-item" data-page="jobs" id="nav-jobs">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+            <rect x="3" y="6" width="14" height="11" rx="2"/>
+            <path d="M7 6V4a2 2 0 014 0v2"/>
+          </svg>
+          Jobs
+          <span class="nav-badge" id="badge-jobs"></span>
+        </button>
+        <button class="nav-item" data-page="resume" id="nav-resume">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M5 2h8l4 4v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z"/>
+            <path d="M13 2v4h4"/>
+            <path d="M7 9h6M7 12h4"/>
+          </svg>
+          Resume
+        </button>
+        <button class="nav-item" data-page="tailor" id="nav-tailor">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M14.5 2.5l3 3-9 9H5.5v-3l9-9z"/>
+            <path d="M12.5 4.5l3 3"/>
+          </svg>
+          Tailor
+        </button>
+        <button class="nav-item" data-page="learnings" id="nav-learnings">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M2 14l5-5 4 4 4-6 3 3"/>
+          </svg>
+          Learnings
+        </button>
+        <button class="nav-item" data-page="profile" id="nav-profile">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+            <circle cx="10" cy="7" r="4"/>
+            <path d="M2 17c0-4 3.6-7 8-7s8 3 8 7"/>
+          </svg>
+          Profile
+        </button>
+
+        <div class="nav-separator"></div>
+
+        <button class="nav-item" data-page="logins" id="nav-logins">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+            <rect x="3" y="10" width="14" height="8" rx="2"/>
+            <path d="M7 10V7a3 3 0 016 0v3"/>
+          </svg>
+          Job Site Logins
+        </button>
+        <button class="nav-item" data-page="settings" id="nav-settings">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+            <circle cx="10" cy="10" r="3"/>
+            <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42"/>
+          </svg>
+          Settings
+        </button>
+      </nav>
+
+      <div id="sidebar-footer">
+        <div id="user-card">
+          <div id="user-avatar">SB</div>
+          <div id="user-info">
+            <div id="user-name">Swopnab Karki</div>
+            <div id="user-email">swopnabbikram@gmail.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main-content">
+
+      <!-- DASHBOARD PAGE -->
+      <section id="page-dashboard" class="page active">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">Your job application agent at a glance</p>
+          </div>
+          <div class="agent-controls">
+            <button id="btn-start-agent" class="btn btn-primary" onclick="agentStart()">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M5 3l8 5-8 5V3z"/></svg>
+              Start Agent
+            </button>
+            <button id="btn-stop-agent" class="btn btn-secondary" onclick="agentStop()" disabled>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="3" y="3" width="10" height="10" rx="2"/></svg>
+              Stop Agent
+            </button>
+            <button id="btn-pause-agent" class="btn btn-secondary" onclick="agentPause()" disabled>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="4" y="3" width="3" height="10" rx="1"/><rect x="9" y="3" width="3" height="10" rx="1"/></svg>
+              Pause
+            </button>
+            <button id="btn-kill-agent" class="btn btn-danger" onclick="agentForceKill()">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+              Force Kill
+            </button>
+          </div>
+        </div>
+
+        <!-- Agent Status Banner -->
+        <div id="agent-banner" class="status-banner hidden">
+          <div class="banner-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6v4M10 14h.01"/><circle cx="10" cy="10" r="8"/></svg>
+          </div>
+          <div class="banner-content">
+            <div id="banner-title" class="banner-title">Your agent needs a hand.</div>
+            <div id="banner-message" class="banner-message"></div>
+          </div>
+          <div class="banner-actions">
+            <button class="btn btn-primary btn-sm" id="btn-take-control" onclick="takeControl()">Take Control</button>
+            <button class="btn btn-secondary btn-sm" id="btn-hand-back" onclick="handBack()">Hand It Back</button>
+          </div>
+        </div>
+
+        <!-- Status Cards -->
+        <div class="stats-grid">
+          <div class="stat-card" id="stat-agent-status">
+            <div class="stat-label">Agent Status</div>
+            <div class="stat-value" id="stat-state">
+              <span class="status-dot stopped"></span>
+              STOPPED
+            </div>
+            <div class="stat-sub" id="stat-checkpoint"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Queue</div>
+            <div class="stat-value" id="stat-queue">0</div>
+            <div class="stat-sub">jobs pending</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Submitted Today</div>
+            <div class="stat-value" id="stat-submitted">0</div>
+            <div class="stat-sub">applications</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Paused</div>
+            <div class="stat-value" id="stat-paused">0</div>
+            <div class="stat-sub">need attention</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Discovered</div>
+            <div class="stat-value" id="stat-discovered">0</div>
+            <div class="stat-sub">all time</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Ollama</div>
+            <div class="stat-value" id="stat-ollama">
+              <span class="status-dot stopped"></span>
+              Checking...
+            </div>
+            <div class="stat-sub" id="stat-ollama-model"></div>
+          </div>
+        </div>
+
+        <!-- Current Task & Mode Indicators -->
+        <div class="dashboard-row">
+          <div class="card current-task-card" id="current-task-card">
+            <div class="card-header">
+              <h2 class="card-title">Current Task</h2>
+              <div id="mode-badges">
+                <span class="badge badge-warning" id="badge-dryrun">DRY RUN</span>
+                <span class="badge badge-danger hidden" id="badge-autosubmit">AUTO-SUBMIT ON</span>
+              </div>
+            </div>
+            <div id="current-task-content" class="empty-state">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"><circle cx="20" cy="20" r="16"/><path d="M20 12v8l5 3"/></svg>
+              <p>No active task. Start the agent to begin.</p>
+            </div>
+          </div>
+
+          <div class="card recent-activity-card">
+            <div class="card-header">
+              <h2 class="card-title">Recent Activity</h2>
+            </div>
+            <div id="recent-activity-list" class="activity-list">
+              <div class="empty-state">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"><path d="M4 20l7-7 5 5 6-8 6 6"/></svg>
+                <p>No activity yet</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- APPLICATIONS PAGE -->
+      <section id="page-applications" class="page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Applications</h1>
+            <p class="page-subtitle" id="apps-subtitle">All job applications</p>
+          </div>
+          <button class="btn btn-primary" onclick="showQueueModal()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v12M2 8h12"/></svg>
+            Queue Job URL
+          </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-bar">
+          <input type="text" id="filter-search" placeholder="Search company, role, location…" class="filter-input" style="flex:1; min-width:160px;" oninput="filterApplications()" />
+          <select id="filter-status" class="filter-select" onchange="filterApplications()">
+            <option value="">All Statuses</option>
+            <option value="discovered">Discovered</option>
+            <option value="analyzed">Analyzed</option>
+            <option value="ineligible">Ineligible</option>
+            <option value="skipped">Skipped</option>
+            <option value="resume_generated">Resume Generated</option>
+            <option value="applying">Applying</option>
+            <option value="needs_attention">Needs Attention</option>
+            <option value="paused">Paused</option>
+            <option value="submitted">Submitted</option>
+            <option value="failed">Failed</option>
+            <option value="interrupted">Interrupted</option>
+            <option value="needs_review">Needs Review</option>
+            <option value="withdrawn">Withdrawn</option>
+          </select>
+          <input type="number" id="filter-min-score" placeholder="Min score…" class="filter-input filter-input-sm" min="0" max="100" oninput="filterApplications()" />
+        </div>
+
+        <!-- Applications Table -->
+        <div class="table-container">
+          <table class="data-table" id="applications-table">
+            <thead>
+              <tr>
+                <th>Company</th>
+                <th>Role</th>
+                <th>Location</th>
+                <th>Source</th>
+                <th>Match</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="applications-tbody">
+              <tr><td colspan="8" class="table-empty">Loading applications...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- JOBS PAGE -->
+      <section id="page-jobs" class="page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Job Queue</h1>
+            <p class="page-subtitle">Jobs waiting to be processed</p>
+          </div>
+          <button class="btn btn-primary" onclick="showQueueModal()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v12M2 8h12"/></svg>
+            Add Job URL
+          </button>
+        </div>
+        <div class="table-container">
+          <table class="data-table" id="jobs-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>URL</th>
+                <th>Company</th>
+                <th>Role</th>
+                <th>Source</th>
+                <th>Priority</th>
+                <th>Queued At</th>
+              </tr>
+            </thead>
+            <tbody id="jobs-tbody">
+              <tr><td colspan="7" class="table-empty">Job queue is empty</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- RESUME PAGE -->
+      <section id="page-resume" class="page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Resume</h1>
+            <p class="page-subtitle">Master resume, verified baseline, and ATS compliance</p>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-secondary" onclick="copyMasterLatex()">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M5 2H2.5A1.5 1.5 0 001 3.5V11"/></svg>
+              Copy Master LaTeX
+            </button>
+            <button class="btn btn-primary" onclick="compileMasterResume()">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h12M2 8h12M2 13h7"/></svg>
+              Recompile Master
+            </button>
+          </div>
+        </div>
+
+        <div class="resume-layout">
+          <div class="card resume-info-card">
+            <div class="card-header">
+              <h2 class="card-title">Master Resume Baseline</h2>
+              <span class="badge badge-success" id="master-ats-badge">100% ATS COMPLIANT</span>
+            </div>
+            <div class="resume-meta">
+              <div class="meta-row"><span class="meta-label">Name</span><span class="meta-value">Swopnab Bikram Karki</span></div>
+              <div class="meta-row"><span class="meta-label">University</span><span class="meta-value">University of Texas at Arlington</span></div>
+              <div class="meta-row"><span class="meta-label">Degree</span><span class="meta-value">B.S. in Computer Science</span></div>
+              <div class="meta-row"><span class="meta-label">Graduation</span><span class="meta-value">Fall 2027</span></div>
+              <div class="meta-row"><span class="meta-label">Format</span><span class="meta-value">LaTeX / 1-Page Letterpaper</span></div>
+              <div class="meta-row"><span class="meta-label">LaTeX Compiler</span><span id="latex-status" class="meta-value status-muted">Checking...</span></div>
+            </div>
+            <div class="resume-projects">
+              <h3 class="section-subtitle">Verified Projects Pool</h3>
+              <div class="project-chip-list">
+                <span class="project-chip tier-1">SwopMobile</span>
+                <span class="project-chip tier-1">CyberSteer</span>
+                <span class="project-chip tier-1">AAURA-V1</span>
+                <span class="project-chip tier-2">Personal Job Tracker</span>
+                <span class="project-chip blacklisted" title="PERMANENTLY BLACKLISTED">Rock-Paper-Scissor 🚫</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card resume-preview-card">
+            <div class="card-header">
+              <h2 class="card-title">Master LaTeX Source</h2>
+              <button class="btn btn-secondary btn-sm" onclick="downloadMasterLatex()">Download .tex</button>
+            </div>
+            <div style="padding: 12px 16px;">
+              <textarea id="master-latex-viewer" class="text-area" rows="18" style="font-family: var(--font-mono); font-size: 11.5px; line-height: 1.45; background: var(--bg-main);" readonly placeholder="Loading master LaTeX..."></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAILOR PAGE -->
+      <section id="page-tailor" class="page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Tailor Resume</h1>
+            <p class="page-subtitle">Analyze job postings and generate tailored 1-page ATS LaTeX resumes</p>
+          </div>
+        </div>
+
+        <div class="tailor-layout">
+          <div class="card tailor-input-card">
+            <div class="card-header"><h2 class="card-title">Job Details</h2></div>
+            <div class="tailor-input-group">
+              <label class="input-label" for="tailor-url">Job URL (optional)</label>
+              <div class="input-row">
+                <input type="url" id="tailor-url" class="text-input" placeholder="https://greenhouse.io/..." />
+                <button class="btn btn-secondary" onclick="fetchJobFromUrl()">Fetch</button>
+              </div>
+            </div>
+            <div class="tailor-input-group">
+              <label class="input-label" for="tailor-jd">Job Description</label>
+              <textarea id="tailor-jd" class="text-area" rows="12" placeholder="Paste the full job description here..."></textarea>
+            </div>
+            <div class="tailor-actions" style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="btn btn-secondary" onclick="runTailor()">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
+                Analyze Match
+              </button>
+              <button class="btn btn-primary" onclick="generateTailoredLatex()">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M5 3l8 5-8 5V3z"/></svg>
+                Generate Tailored LaTeX Resume
+              </button>
+            </div>
+          </div>
+
+          <div class="card tailor-output-card">
+            <div class="card-header">
+              <h2 class="card-title">Analysis & Tailored Output</h2>
+            </div>
+            <div id="tailor-output" class="tailor-output empty-state">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"><path d="M14.5 5.5l3 3-9 9H5.5v-3l9-9z"/></svg>
+              <p>Paste a job description and click Analyze Match or Generate Tailored LaTeX Resume</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- LEARNINGS PAGE -->
+      <section id="page-learnings" class="page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Analytics &amp; Learnings</h1>
+            <p class="page-subtitle">Real insights computed from your local application history</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="loadLearnings()">↻ Refresh</button>
+        </div>
+        <div id="learnings-content">
+          <div class="empty-state" style="margin:40px 0;">
+            <p>Navigate to this page to load analytics.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROFILE PAGE -->
+      <section id="page-profile" class="page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Profile</h1>
+            <p class="page-subtitle">Verified candidate data used for all applications</p>
+          </div>
+          <button class="btn btn-secondary" onclick="reloadProfile()">Reload from File</button>
+        </div>
+
+        <div class="profile-layout">
+          <div class="card">
+            <div class="card-header"><h2 class="card-title">Identity</h2></div>
+            <div id="profile-identity" class="meta-list">Loading...</div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h2 class="card-title">Education</h2></div>
+            <div id="profile-education" class="meta-list">Loading...</div>
+          </div>
+          <div class="card skill-card">
+            <div class="card-header">
+              <h2 class="card-title">Skills</h2>
+              <span class="badge badge-success">Verified only on resume</span>
+            </div>
+            <div id="profile-skills" class="skills-grid">Loading...</div>
+          </div>
+          <div class="card project-card">
+            <div class="card-header">
+              <h2 class="card-title">Projects</h2>
+            </div>
+            <div id="profile-projects" class="projects-list">Loading...</div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Safety Rules</h2>
+            </div>
+            <div class="safety-rules">
+              <div class="rule-item rule-blacklist">
+                <span class="rule-icon">🚫</span>
+                <div>
+                  <div class="rule-title">Permanently Blacklisted Projects</div>
+                  <div class="rule-desc">Rock-Paper-Scissor — NEVER appears in any output under any circumstance</div>
+                </div>
+              </div>
+              <div class="rule-item">
+                <span class="rule-icon">✓</span>
+                <div>
+                  <div class="rule-title">Truthfulness First</div>
+                  <div class="rule-desc">NEVER fabricate technologies, metrics, or experience</div>
+                </div>
+              </div>
+              <div class="rule-item">
+                <span class="rule-icon">✓</span>
+                <div>
+                  <div class="rule-title">One-Page Hard Limit</div>
+                  <div class="rule-desc">Generated resumes must never exceed one page</div>
+                </div>
+              </div>
+              <div class="rule-item">
+                <span class="rule-icon">✓</span>
+                <div>
+                  <div class="rule-title">Sensitive Questions Always Pause</div>
+                  <div class="rule-desc">Citizenship, sponsorship, legal — always handed off to you</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- JOB SITE LOGINS PAGE -->
+      <section id="page-logins" class="page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Job Site Logins</h1>
+            <p class="page-subtitle">Manage browser sessions for job sites</p>
+          </div>
+        </div>
+        <div class="logins-grid">
+          <div class="card login-card" id="login-linkedin">
+            <div class="login-header">
+              <div class="login-site-name">LinkedIn</div>
+              <span class="status-chip status-unknown">Unknown</span>
+            </div>
+            <p class="login-desc">Used for job discovery. Agent pauses if authentication required — you log in manually.</p>
+            <div class="login-actions">
+              <button class="btn btn-secondary btn-sm">Open Browser</button>
+              <button class="btn btn-secondary btn-sm">Check Session</button>
+            </div>
+          </div>
+          <div class="card login-card" id="login-greenhouse">
+            <div class="login-header">
+              <div class="login-site-name">Greenhouse</div>
+              <span class="status-chip status-unknown">Unknown</span>
+            </div>
+            <p class="login-desc">ATS used by many companies. Adapter implemented in Phase 7.</p>
+            <div class="login-actions">
+              <button class="btn btn-secondary btn-sm">Open Browser</button>
+              <button class="btn btn-secondary btn-sm">Check Session</button>
+            </div>
+          </div>
+          <div class="card login-card" id="login-lever">
+            <div class="login-header">
+              <div class="login-site-name">Lever</div>
+              <span class="status-chip status-unknown">Unknown</span>
+            </div>
+            <p class="login-desc">ATS used by many companies. Adapter implemented in Phase 7.</p>
+            <div class="login-actions">
+              <button class="btn btn-secondary btn-sm">Open Browser</button>
+              <button class="btn btn-secondary btn-sm">Check Session</button>
+            </div>
+          </div>
+          <div class="card login-card" id="login-workday">
+            <div class="login-header">
+              <div class="login-site-name">Workday</div>
+              <span class="status-chip status-unknown">Unknown</span>
+            </div>
+            <p class="login-desc">Complex ATS — adapter implemented in Phase 9.</p>
+            <div class="login-actions">
+              <button class="btn btn-secondary btn-sm">Open Browser</button>
+              <button class="btn btn-secondary btn-sm">Check Session</button>
+            </div>
+          </div>
+        </div>
+        <div class="security-note">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="6" width="8" height="6" rx="1"/><path d="M5 6V4a2 2 0 014 0v2"/></svg>
+          Passwords are never stored or typed by the agent. You always log in manually via the browser.
+        </div>
+      </section>
+
+      <!-- SETTINGS PAGE -->
+      <section id="page-settings" class="page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Settings</h1>
+            <p class="page-subtitle">Agent configuration and safety controls</p>
+          </div>
+        </div>
+
+        <div class="settings-layout">
+          <div class="card settings-section">
+            <div class="card-header"><h2 class="card-title">Safety Controls</h2></div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">Dry Run Mode</div>
+                <div class="setting-desc">Agent fills applications but NEVER clicks Submit. Recommended during setup.</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle" id="toggle-dryrun">
+                  <input type="checkbox" id="setting-dryrun" checked onchange="updateSetting('dry_run', this.checked)" />
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">Auto-Submit</div>
+                <div class="setting-desc danger-text">Only enable when confident. Agent submits ONLY when ALL safety checks pass.</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle" id="toggle-autosubmit">
+                  <input type="checkbox" id="setting-autosubmit" onchange="updateSetting('auto_submit', this.checked)" />
+                  <span class="toggle-track toggle-track-danger"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="card settings-section">
+            <div class="card-header"><h2 class="card-title">Application Limits</h2></div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">Minimum Match Score</div>
+                <div class="setting-desc">Skip jobs below this score (0–100)</div>
+              </div>
+              <input type="number" class="setting-input" id="setting-min-score" value="65" min="0" max="100" />
+            </div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">Max Applications Per Day</div>
+                <div class="setting-desc">Quality over quantity</div>
+              </div>
+              <input type="number" class="setting-input" id="setting-max-per-day" value="25" min="1" max="100" />
+            </div>
+          </div>
+
+          <div class="card settings-section">
+            <div class="card-header"><h2 class="card-title">AI Configuration</h2></div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">Ollama Base URL</div>
+              </div>
+              <input type="text" class="setting-input setting-input-wide" id="setting-ollama-url" value="http://localhost:11434" />
+            </div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">Model</div>
+              </div>
+              <input type="text" class="setting-input setting-input-wide" id="setting-ollama-model" value="llama3.2" />
+            </div>
+            <div class="setting-status">
+              <span id="ollama-status-indicator">
+                <span class="status-dot stopped" id="ollama-status-dot"></span>
+                <span id="ollama-status-text">Checking Ollama...</span>
+              </span>
+              <button class="btn btn-secondary btn-sm" onclick="checkOllama()">Test Connection</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Queue Job Modal -->
+  <div id="modal-queue" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-queue-title">
+    <div class="modal-backdrop" onclick="closeModal('modal-queue')"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-queue-title">Queue Job URL</h2>
+        <button class="modal-close" onclick="closeModal('modal-queue')" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label class="input-label" for="queue-url">Job URL</label>
+        <input type="url" id="queue-url" class="text-input" placeholder="https://jobs.greenhouse.io/..." />
+        <label class="input-label" for="queue-company">Company (optional)</label>
+        <input type="text" id="queue-company" class="text-input" placeholder="Google" />
+        <label class="input-label" for="queue-role">Role (optional)</label>
+        <input type="text" id="queue-role" class="text-input" placeholder="Software Engineering Intern" />
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-queue')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitQueueJob()">Add to Queue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Force Kill Confirmation Modal -->
+  <div id="modal-forcekill" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-forcekill-title">
+    <div class="modal-backdrop" onclick="closeModal('modal-forcekill')"></div>
+    <div class="modal-content" style="max-width: 440px;">
+      <div class="modal-header" style="border-bottom: 1px solid var(--border-color, #333);">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="color:#ef4444; font-size:18px;">⚠️</span>
+          <h2 class="modal-title" id="modal-forcekill-title" style="color:#ef4444;">Emergency Force Kill</h2>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-forcekill')" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" style="padding: 16px 0;">
+        <p style="color:var(--text-primary, #fff); font-size:14px; margin-bottom:8px;">
+          Are you sure you want to <strong>force kill</strong> the autonomous agent?
+        </p>
+        <p style="color:var(--text-muted, #9ca3af); font-size:12.5px; line-height:1.4;">
+          This will immediately terminate all active browser sessions, abort any pending form filling, and transition the agent state to <code>STOPPED</code>.
+        </p>
+      </div>
+      <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:10px; margin-top:8px;">
+        <button class="btn btn-secondary" onclick="closeModal('modal-forcekill')">Cancel</button>
+        <button class="btn btn-danger" style="background:#dc2626; color:#fff; font-weight:600;" onclick="confirmForceKill()">Yes, Force Kill</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Human-in-the-Loop Review Modal -->
+  <div id="modal-handoff-review" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-handoff-title">
+    <div class="modal-backdrop" onclick="closeModal('modal-handoff-review')"></div>
+    <div class="modal-content modal-lg" style="max-width: 860px; max-height: 90vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="badge badge-warning" style="font-size:11px; font-weight:700;">REVIEW REQUIRED</span>
+            <h2 class="modal-title" id="modal-handoff-title">Application Ready for Review</h2>
+          </div>
+          <div class="modal-subtitle" id="modal-handoff-subtitle" style="font-size:13px; color:var(--text-muted); margin-top:2px;">Company — Role</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-handoff-review')" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body" style="overflow-y: auto; padding: 16px;">
+        <!-- Prominent Safety Review Banner -->
+        <div class="handoff-alert-box" id="handoff-alert-box" style="background: rgba(245, 158, 11, 0.1); border: 1px solid #f59e0b; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+          <div style="display:flex; gap:12px; align-items:flex-start;">
+            <div style="font-size: 22px;">🛡️</div>
+            <div>
+              <strong style="color: #f59e0b; font-size: 14px;">Agent work is complete. Review the application and submit it yourself.</strong>
+              <p id="handoff-reason-desc" style="color: var(--text-primary); font-size: 12.5px; margin-top: 4px; line-height: 1.4;">
+                All form fields have been pre-filled and the tailored 1-page resume is ready. Automatic final submission is permanently disabled.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Meta info grid -->
+        <div class="handoff-meta-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 16px;">
+          <div class="handoff-meta-item">
+            <span class="meta-label">Match Score</span>
+            <span class="meta-val highlight" id="handoff-score">--</span>
+          </div>
+          <div class="handoff-meta-item">
+            <span class="meta-label">Current Status</span>
+            <span class="meta-val" id="handoff-status" style="color:#f59e0b; font-weight:600;">READY_FOR_REVIEW</span>
+          </div>
+          <div class="handoff-meta-item">
+            <span class="meta-label">Employer Portal</span>
+            <button class="btn btn-secondary btn-sm" id="btn-handoff-open-url" onclick="openHandoffJobUrl()" style="margin-top:4px;">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 2H2v8h8V7M7 1h4v4M11 1L5 7"/></svg>
+              Open Job Posting ↗
+            </button>
+          </div>
+        </div>
+
+        <!-- Resume info and action bar -->
+        <div style="background: var(--surface-light, #1e293b); border: 1px solid var(--border-color, #334155); border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+            <div>
+              <span style="font-size: 13px; font-weight: 600;">📄 Tailored 1-Page Resume (Exact file uploaded)</span>
+              <div id="handoff-resume-hash" style="font-size:11px; color:var(--text-muted); font-family:monospace; margin-top:2px;">SHA-256: --</div>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-secondary btn-sm" onclick="previewHandoffPdf()">Preview PDF</button>
+              <button class="btn btn-secondary btn-sm" onclick="openHandoffPdfInNewTab()">Open PDF ↗</button>
+              <button class="btn btn-secondary btn-sm" onclick="viewHandoffLatex()">Open LaTeX</button>
+              <button class="btn btn-secondary btn-sm" onclick="recompileHandoffResume()">Recompile</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Answers section -->
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">💬 Filled Application Answers</div>
+          <div id="handoff-answers-list" style="background: var(--surface-light, #1e293b); border: 1px solid var(--border-color, #334155); border-radius: 8px; padding: 10px; max-height: 160px; overflow-y: auto; font-size: 12px;">
+            Loading answers...
+          </div>
+        </div>
+
+        <!-- Pre-submit Screenshot container -->
+        <div class="screenshot-container">
+          <div class="screenshot-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size: 13px; font-weight: 600;">Pre-Submit Browser Capture</span>
+            <button class="btn btn-secondary btn-sm" onclick="refreshReviewScreenshot()">Reload Capture</button>
+          </div>
+          <div class="screenshot-wrapper" id="screenshot-wrapper">
+            <img id="handoff-screenshot-img" src="" alt="Pre-submit Form Screenshot" class="screenshot-img hidden" onload="this.classList.remove('hidden')" onerror="this.classList.add('hidden')" />
+            <div id="screenshot-placeholder" class="screenshot-placeholder">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <span>Review screenshot ready for inspection.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Human Confirmation Block -->
+        <div style="background: rgba(34, 197, 94, 0.08); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 8px; padding: 14px; margin-top: 16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong style="color: #22c55e; font-size: 13.5px;">Did you manually submit this application on the employer website?</strong>
+              <p style="color: var(--text-muted); font-size: 12px; margin-top: 2px;">
+                Confirm only after you have clicked the submit button in your own browser session.
+              </p>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-handoff-review')">No, Keep Open</button>
+              <button class="btn btn-success btn-sm" style="background:#16a34a; font-weight:600;" onclick="confirmManualSubmissionAction()">Yes, Mark Submitted</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer handoff-modal-footer">
+        <div class="footer-left" style="display:flex; gap:6px;">
+          <button class="btn btn-secondary btn-sm" id="btn-modal-take-control" onclick="takeControl()">Take Control</button>
+          <button class="btn btn-primary btn-sm" id="btn-modal-hand-back" onclick="handBack()">Hand Back</button>
+        </div>
+        <div class="footer-right">
+          <button class="btn btn-danger btn-sm" onclick="rejectCurrentHandoff()">Abandon Application</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF Preview Modal -->
+  <div id="modal-pdf-preview" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-pdf-title">
+    <div class="modal-backdrop" onclick="closeModal('modal-pdf-preview')"></div>
+    <div class="modal-content modal-lg" style="max-width: 900px; height: 90vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title" id="modal-pdf-title">Tailored Resume Preview</h2>
+          <div id="modal-pdf-subtitle" style="font-size:11.5px; color:var(--text-muted); font-family:monospace;">SHA-256: --</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-pdf-preview')" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" style="flex:1; padding:0; overflow:hidden;">
+        <iframe id="pdf-preview-iframe" src="" style="width:100%; height:100%; border:none;"></iframe>
+      </div>
+      <div class="modal-footer" style="display:flex; justify-content:space-between;">
+        <div style="font-size:12px; color:var(--text-muted);">Exact 1-page PDF generated for employer submission</div>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-pdf-preview')">Close Preview</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

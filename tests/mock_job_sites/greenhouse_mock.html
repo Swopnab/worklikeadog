@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Acme AI - Software Engineering Intern</title>
+</head>
+<body>
+  <h1>Software Engineering Intern</h1>
+  <div id="grnh_app">
+    <form id="application_form" action="/apply" method="POST" enctype="multipart/form-data">
+      <div class="field">
+        <label for="first_name">First Name *</label>
+        <input type="text" id="first_name" name="job_application[first_name]" required />
+      </div>
+      <div class="field">
+        <label for="last_name">Last Name *</label>
+        <input type="text" id="last_name" name="job_application[last_name]" required />
+      </div>
+      <div class="field">
+        <label for="email">Email *</label>
+        <input type="email" id="email" name="job_application[email]" required />
+      </div>
+      <div class="field">
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" name="job_application[phone]" />
+      </div>
+      <div class="field">
+        <label for="resume">Resume/CV *</label>
+        <input type="file" id="resume" name="job_application[resume]" required />
+      </div>
+      <div class="field">
+        <label for="job_application_answers_attributes_0_boolean_value">Are you legally authorized to work in the United States? *</label>
+        <select id="job_application_answers_attributes_0_boolean_value" name="job_application[answers_attributes][0][boolean_value]">
+          <option value="">-- Please Select --</option>
+          <option value="1">Yes</option>
+          <option value="0">No</option>
+        </select>
+      </div>
+      <input type="submit" id="submit_app" value="Submit Application" />
+    </form>
+  </div>
+</body>
+</html>

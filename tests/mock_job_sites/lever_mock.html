@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Startup Labs - Cloud Engineer</title>
+</head>
+<body>
+  <div class="application-page">
+    <form class="lever-form" id="application-form" action="https://jobs.lever.co/startuplabs/apply" method="POST">
+      <div class="application-field">
+        <label>Full Name</label>
+        <input type="text" name="name" required />
+      </div>
+      <div class="application-field">
+        <label>Email</label>
+        <input type="email" name="email" required />
+      </div>
+      <div class="application-field">
+        <label>Phone</label>
+        <input type="tel" name="phone" />
+      </div>
+      <div class="application-field">
+        <label>LinkedIn Profile</label>
+        <input type="text" name="urls[LinkedIn]" />
+      </div>
+      <div class="application-field">
+        <label>GitHub Profile</label>
+        <input type="text" name="urls[GitHub]" />
+      </div>
+      <div class="application-field">
+        <label>Resume/CV</label>
+        <input type="file" name="resume" />
+      </div>
+      <button type="submit">Submit application</button>
+    </form>
+  </div>
+</body>
+</html>

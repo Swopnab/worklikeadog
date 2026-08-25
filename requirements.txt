@@ -1,0 +1,48 @@
+# ============================================================
+# JobAgent — Python Dependencies
+# ============================================================
+
+# Web framework
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+
+# Database
+sqlalchemy>=2.0.39
+alembic>=1.13.0
+aiosqlite>=0.20.0
+
+# Configuration
+pydantic>=2.10.0
+pydantic-settings>=2.6.0
+python-dotenv>=1.0.0
+
+# HTTP client (for Ollama API, job discovery)
+httpx>=0.28.0
+requests>=2.32.0
+
+# Browser automation
+playwright>=1.48.0
+
+# Data processing
+beautifulsoup4>=4.12.0
+lxml>=5.0.0
+
+# Hashing / fingerprinting
+xxhash>=3.5.0
+
+# Date/time
+python-dateutil>=2.9.0
+
+# File handling
+aiofiles>=24.1.0
+
+# Logging
+structlog>=24.4.0
+
+# Testing
+pytest>=8.3.0
+pytest-asyncio>=0.24.0
+httpx>=0.28.0  # also used for test client
+
+# Type stubs (development)
+types-requests>=2.32.0

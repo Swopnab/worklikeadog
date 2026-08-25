@@ -1,0 +1,50 @@
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
+# Python & Virtual Environments
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Application Data & Artifacts
+applications/
+data/
+logs/
+private/
+generated/
+resume/generated/
+cookies/
+browser_profiles/
+
+# Databases
+applications.db
+*.sqlite
+*.sqlite3
+*.db
+
+# PDF Artifacts
+*.pdf
+
+# Graphify Output
+graphify-out/
+
+# MCP Local Secrets
+.agents/mcp_config.json
+
+# Operating System
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+database/*.db*
+profile/master_profile.json
+profile/approved_answers.json
+resume/master_resume.tex
