@@ -1917,12 +1917,19 @@ async function saveCandidateProfile(event) {
   const profile = structuredClone(candidateProfile || {});
   profile.identity = {...profile.identity, name:value('profile-name'), first_name:value('profile-first-name'),
     last_name:value('profile-last-name'), email:value('profile-email'), phone:value('profile-phone'), location:value('profile-location')};
-  profile.education = [{...(profile.education?.[0] || {}), institution:value('profile-university'),
-    degree:value('profile-degree'), graduation:value('profile-graduation')}];
+  const education = {...(profile.education?.[0] || {}), institution:value('profile-university'),
+    degree:value('profile-degree'), graduation:value('profile-graduation')};
+  education.graduation_year = education.graduation.match(/\b(20\d{2})\b/)?.[1] || '';
+  profile.education = [education, ...(profile.education?.slice(1) || [])];
   profile.links = {...profile.links, linkedin:value('profile-linkedin'), github:value('profile-github')};
   profile.skills = profile.skills || {};
   for (const [id,cat] of [['profile-languages','languages'], ['profile-web-skills','web_and_backend'], ['profile-tools','tools']]) {
-    profile.skills[cat] = Object.fromEntries(value(id).split(',').map(s => s.trim()).filter(Boolean).map(s => [s,{status:'verified'}]));
+    const previous = profile.skills[cat] || {};
+    const retained = Object.fromEntries(Object.entries(previous).filter(([, evidence]) =>
+      (typeof evidence === 'string' ? evidence : evidence.status) !== 'verified'));
+    profile.skills[cat] = {...retained, ...Object.fromEntries(value(id).split(',').map(s => s.trim()).filter(Boolean)
+      .map(s => [s, previous[s] && (typeof previous[s] === 'string' ? previous[s] : previous[s].status) === 'verified'
+        ? previous[s] : {status:'verified'}]))};
   }
   try {
     await apiFetch('/profile/', {method:'PUT',body:JSON.stringify(profile)});
