@@ -119,6 +119,7 @@ async def test_orchestrator_process_mock_job(tmp_path):
 
         # Process the mock job
         result = await orchestrator.process_job(job, session)
+        await orchestrator.runner.session.close()
         assert "status" in result
         assert job.processed is True
         assert job.application_id is not None

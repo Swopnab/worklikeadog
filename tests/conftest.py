@@ -14,6 +14,7 @@ os.environ["MASTER_RESUME_PATH"] = "tests/fixtures/resume.tex"
 os.environ["RESUME_GENERATED_DIR"] = str(Path(_data.name) / "generated")
 os.environ["RUNTIME_SETTINGS_PATH"] = str(Path(_data.name) / "settings.json")
 os.environ["OLLAMA_BASE_URL"] = "http://127.0.0.1:1"
+os.environ["BROWSER_HEADLESS"] = "true"
 
 import pytest_asyncio
 from database.connection import init_db, engine

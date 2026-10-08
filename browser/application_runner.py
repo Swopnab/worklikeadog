@@ -26,6 +26,7 @@ from browser.safety_barrier import SafetyBarrier
 from resume.validator import ResumeCompilerValidator
 from resume.renderer import LaTeXResumeRenderer
 from ai.resume_tailor import ResumeTailor
+from config.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ class ApplicationRunner:
     """Executes the automated browser workflow for a single job application."""
 
     def __init__(self, browser_session: Optional[BrowserSession] = None):
-        self.session = browser_session or BrowserSession(headless=False)
+        self.session = browser_session or BrowserSession(headless=settings.browser_headless)
 
     async def run_application_flow(
         self,
@@ -45,6 +46,7 @@ class ApplicationRunner:
         match_score: Optional[float] = None,
         eligibility_passed: bool = True,
         tailored_tex_path: Optional[str] = None,
+        prepared_pdf_path: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Executes the full application navigation, form filling, and safety verification.
@@ -74,13 +76,24 @@ class ApplicationRunner:
         ats_platform = await ATSDetector.detect_from_page(page)
         logger.info("Detected ATS Platform: %s", ats_platform.value)
 
-        # 4. Resolve Resume PDF (compile if LaTeX source provided)
+        # 4. Reuse the exact validated PDF from the orchestrator, preserving its hash.
         pdf_path = None
-        if tailored_tex_path and Path(tailored_tex_path).exists():
+        if prepared_pdf_path:
+            candidate = Path(prepared_pdf_path)
+            validation = ResumeCompilerValidator.validate_pdf(candidate)
+            if not validation.get("valid"):
+                return {"success": False, "status": ApplicationStatus.RESUME_COMPILE_ERROR.value,
+                        "pause_reason": validation.get("error", "Prepared PDF did not pass validation.")}
+            pdf_path = candidate
+        elif tailored_tex_path and Path(tailored_tex_path).exists():
             tex_file = Path(tailored_tex_path)
             compile_res = ResumeCompilerValidator.compile_latex(tex_file, tex_file.parent)
-            if compile_res.get("pdf_path") and Path(compile_res["pdf_path"]).exists():
-                pdf_path = Path(compile_res["pdf_path"])
+            candidate = Path(compile_res["pdf_path"]) if compile_res.get("pdf_path") else None
+            validation = ResumeCompilerValidator.validate_pdf(candidate) if candidate else {}
+            if not compile_res.get("success") or not validation.get("valid"):
+                return {"success": False, "status": ApplicationStatus.RESUME_COMPILE_ERROR.value,
+                        "pause_reason": compile_res.get("error") or validation.get("error") or "Resume PDF unavailable."}
+            pdf_path = candidate
 
         # 5. Execute Platform Form Filler
         filler = get_form_filler(ats_platform)
@@ -109,7 +122,7 @@ class ApplicationRunner:
             [
                 {"event_type": "APPLICATION_OPENED", "description": f"Opened {ats_platform.value.upper()} application page"},
                 {"event_type": "FORM_FILLED", "description": f"Filled {len(fill_result.filled_fields)} verified fields"},
-                {"event_type": "RESUME_UPLOADED", "description": f"Uploaded tailored 1-page resume ({pdf_path.name if pdf_path else 'master_resume.pdf'})"},
+                {"event_type": "RESUME_UPLOADED" if pdf_path else "RESUME_MISSING", "description": f"Prepared validated resume ({pdf_path.name})" if pdf_path else "No resume PDF available for upload"},
                 {"event_type": "READY_FOR_REVIEW", "description": "Form completed; stopped at final review stage for human inspection"},
             ]
         )

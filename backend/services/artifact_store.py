@@ -158,7 +158,8 @@ class ArtifactStore:
 
         if pdf_source_path and Path(pdf_source_path).exists():
             dest = dir_path / "resume.pdf"
-            shutil.copy2(str(pdf_source_path), str(dest))
+            if Path(pdf_source_path).resolve() != dest.resolve():
+                shutil.copy2(str(pdf_source_path), str(dest))
             pdf_path = str(dest)
             pdf_hash = compute_sha256(dest)
 

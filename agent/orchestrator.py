@@ -220,6 +220,7 @@ class JobOrchestrator:
             await db.commit()
             return {"success": False, "status": "resume_compile_error", "error": error_detail}
 
+        latex_source = comp_res.get("latex_code", latex_source)
         save_res = ArtifactStore.save_resume(app.id, app.company, app.job_title, latex_source=latex_source, pdf_source_path=pdf_path)
         app.resume_path = save_res["pdf_path"] or save_res["tex_path"]
         app.resume_hash = save_res.get("resume_hash")
@@ -240,6 +241,7 @@ class JobOrchestrator:
             match_score=app.match_score,
             eligibility_passed=elig_passed,
             tailored_tex_path=tex_path,
+            prepared_pdf_path=str(pdf_path),
         )
 
         # 6. Process Flow Result & Enforce Review Gate (Never Auto-Submit)

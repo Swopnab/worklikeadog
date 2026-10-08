@@ -208,3 +208,15 @@ def test_installed_compiler_produces_valid_one_page_resume(tmp_path, candidate):
     assert result['is_one_page'] is True
     assert result['selectable_text'] is True
     assert validator.ResumeCompilerValidator.validate_pdf(Path(result['pdf_path']))['valid'] is True
+
+
+def test_archive_pdf_already_in_application_directory():
+    from backend.services.artifact_store import ArtifactStore, get_artifact_dir, compute_sha256
+    directory = get_artifact_dir(987654,'Example Archive Check','Software Intern')
+    pdf = directory/'resume.pdf'
+    pdf.write_bytes(b'fictional artifact content for the copy regression')
+    digest = compute_sha256(pdf)
+    result = ArtifactStore.save_resume(987654,'Example Archive Check','Software Intern',latex_source='Final reduced source',pdf_source_path=pdf)
+    assert result['resume_hash'] == digest
+    assert Path(result['pdf_path']).read_bytes() == b'fictional artifact content for the copy regression'
+    assert Path(result['tex_path']).read_text() == 'Final reduced source'
