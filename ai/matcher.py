@@ -20,7 +20,7 @@ from config.settings import settings
 
 logger = logging.getLogger(__name__)
 
-PROFILE_PATH = Path("profile/master_profile.json")
+PROFILE_PATH = Path(settings.profile_path)
 PROJECTS_PATH = Path("profile/project_registry.json")
 
 
@@ -61,6 +61,8 @@ class MatchCoordinator:
         """
         # Reload profile in case user edited it
         self.profile, self.project_registry = load_candidate_data()
+        if not self.profile.get("identity", {}).get("email"):
+            raise ValueError("Set up your candidate profile before analyzing jobs.")
         self.eligibility_checker = EligibilityChecker(self.profile)
         self.scoring_engine = JobMatchEngine(self.profile, self.project_registry)
 

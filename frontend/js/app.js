@@ -10,6 +10,7 @@ let currentPage = 'dashboard';
 let currentTailorEvaluation = null;
 let appFilters = {};
 let currentAppDetailId = null;
+let candidateProfile = null;
 
 // ============================================================
 // ROUTER
@@ -19,12 +20,14 @@ function navigate(page) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
   const pageEl = document.getElementById(`page-${page}`);
+  if (!pageEl) return;
+  history.replaceState(null, "", `#${page}`);
   const navEl  = document.getElementById(`nav-${page}`);
   if (pageEl) pageEl.classList.add('active');
   if (navEl)  navEl.classList.add('active');
 
   currentPage = page;
-  document.title = `WorkLikeDog — ${capitalize(page)}`;
+  document.title = `WorkLikeADog — ${capitalize(page)}`;
 
   switch (page) {
     case 'dashboard':    loadDashboard(); break;
@@ -52,7 +55,7 @@ async function apiFetch(path, options = {}) {
     });
     if (!resp.ok) {
       const err = await resp.json().catch(() => ({ detail: resp.statusText }));
-      throw new Error(err.detail || `HTTP ${resp.status}`);
+      throw new Error(Array.isArray(err.detail) ? err.detail.map(e => e.msg).join("; ") : err.detail || `HTTP ${resp.status}`);
     }
     return await resp.json();
   } catch (e) {
@@ -146,11 +149,11 @@ function openExternalUrl(url) {
     showToast('Job URL is not available', 'warning');
     return;
   }
-  let targetUrl = url.trim();
-  if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://') && !targetUrl.startsWith('file://')) {
-    targetUrl = 'https://' + targetUrl;
-  }
-  window.open(targetUrl, '_blank', 'noopener,noreferrer');
+  try {
+    const targetUrl = new URL(url.trim(), window.location.href);
+    if (!['http:', 'https:'].includes(targetUrl.protocol)) throw new Error('Unsupported link');
+    window.open(targetUrl.href, '_blank', 'noopener,noreferrer');
+  } catch { showToast('This link is not a valid web address', 'warning'); }
 }
 
 function openHandoffJobUrl() {
@@ -274,7 +277,7 @@ async function confirmManualSubmissionAction() {
     closeModal('modal-handoff-review');
     await handBack();
     if (currentPage === 'applications') loadApplications();
-    loadDashboardStats();
+    loadStats();
   } catch(e) {
     showToast(`Error confirming submission: ${e.message}`, 'error');
   }
@@ -1075,6 +1078,21 @@ async function submitQueueJob() {
 async function loadProfile() {
   try {
     const profile = await apiFetch('/profile/');
+    candidateProfile = profile;
+    document.getElementById('setup-banner')?.classList.toggle('hidden', profile._configured);
+    const fields = {'profile-name': profile.identity?.name, 'profile-first-name': profile.identity?.first_name,
+      'profile-last-name': profile.identity?.last_name, 'profile-email': profile.identity?.email,
+      'profile-phone': profile.identity?.phone, 'profile-location': profile.identity?.location,
+      'profile-university': profile.education?.[0]?.institution, 'profile-degree': profile.education?.[0]?.degree,
+      'profile-graduation': profile.education?.[0]?.graduation, 'profile-linkedin': profile.links?.linkedin,
+      'profile-github': profile.links?.github};
+    Object.entries(fields).forEach(([id, value]) => { document.getElementById(id).value = value || ''; });
+    for (const [id, cat] of [['profile-languages','languages'], ['profile-web-skills','web_and_backend'], ['profile-tools','tools']]) {
+      document.getElementById(id).value = Object.entries(profile.skills?.[cat] || {}).filter(([, value]) =>
+        (typeof value === 'string' ? value : value.status) === 'verified').map(([name]) => name).join(', ');
+    }
+    document.getElementById('user-name').textContent = profile.identity?.name || 'Your workspace';
+    document.getElementById('user-email').textContent = profile.identity?.email || 'Stored on this device';
 
     const identity = profile.identity || {};
     document.getElementById('profile-identity').innerHTML = Object.entries(identity)
@@ -1091,7 +1109,7 @@ async function loadProfile() {
 
     const skills = profile.skills || {};
     const allSkills = Object.entries(skills).flatMap(([cat, catSkills]) =>
-      Object.entries(catSkills).map(([name, data]) => ({ name, status: data.status }))
+      Object.entries(catSkills).map(([name, data]) => ({ name, status: typeof data === "string" ? data : data.status }))
     );
     document.getElementById('profile-skills').innerHTML = allSkills
       .map(s => `<span class="skill-tag ${s.status !== 'verified' ? 'exposure' : ''}" title="${s.status}">${escHtml(s.name)}</span>`)
@@ -1294,6 +1312,17 @@ async function loadResumePage() {
   const atsBadge = document.getElementById('master-ats-badge');
 
   if (statusEl) statusEl.textContent = 'Checking compiler...';
+  try {
+    const profile = await apiFetch('/profile/');
+    const education = profile.education?.[0] || {};
+    const values = {name:profile.identity?.name, university:education.institution,
+      degree:education.degree, graduation:education.graduation};
+    for (const [key,value] of Object.entries(values)) {
+      const element = document.getElementById(`resume-profile-${key}`);
+      if (element) element.textContent = value || 'Not entered';
+    }
+  } catch { /* The source request below reports any unavailable backend. */ }
+
 
   try {
     const data = await apiFetch('/resume/master');
@@ -1315,8 +1344,8 @@ async function loadResumePage() {
       atsBadge.className = `badge ${score >= 80 ? 'badge-success' : 'badge-warning'}`;
     }
   } catch(e) {
-    if (viewer) viewer.value = `Error loading master resume: ${e.message}`;
-    if (statusEl) statusEl.textContent = 'Error checking compiler';
+    if (viewer) viewer.value = 'Save your candidate profile, then create a master résumé source using the button above.';
+    if (statusEl) statusEl.textContent = 'Create a master source to begin';
   }
 }
 
@@ -1386,7 +1415,7 @@ async function generateTailoredLatex() {
     });
 
     renderTailoredResumeResult(analysis, tailored);
-    showToast('Tailored 1-page LaTeX resume generated!', 'success');
+    showToast(tailored.pdf_valid ? 'One-page résumé compiled and validated.' : tailored.compile_error || 'Résumé source generated. PDF page count awaits compilation.', tailored.compile_error ? 'warning' : 'success');
   } catch(e) {
     output.innerHTML = `
       <div class="empty-state">
@@ -1422,12 +1451,12 @@ function renderTailoredResumeResult(analysis, tailored) {
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
           <span class="badge ${atsScore >= 80 ? 'badge-success' : 'badge-warning'}">${atsScore}% ATS Score</span>
-          <span class="badge badge-muted">1-Page Enforced</span>
+          <span class="badge badge-muted">${tailored.pdf_valid ? '1 page verified' : 'PDF not yet verified'}</span>
         </div>
       </div>
 
       <div style="margin-bottom:12px;">
-        <div style="font-size:11.5px; font-weight:600; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px;">Selected 3 Strongest Verified Projects</div>
+        <div style="font-size:11.5px; font-weight:600; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px;">Selected Verified Projects</div>
         ${projectsSummary}
       </div>
 
@@ -1715,8 +1744,8 @@ async function loadSettings() {
     const ollamaUrlEl  = document.getElementById('setting-ollama-url');
     const ollamaModelEl= document.getElementById('setting-ollama-model');
 
-    if (dryrunEl)     dryrunEl.checked = s.dry_run;
-    if (autosubmitEl) autosubmitEl.checked = s.auto_submit;
+    if (dryrunEl) { dryrunEl.checked = true; dryrunEl.disabled = true; }
+    if (autosubmitEl) { autosubmitEl.checked = false; autosubmitEl.disabled = true; }
     if (minScoreEl)   minScoreEl.value = s.min_match_score;
     if (maxPerDayEl)  maxPerDayEl.value = s.max_applications_per_day;
     if (ollamaUrlEl)  ollamaUrlEl.value = s.ollama_base_url;
@@ -1873,5 +1902,44 @@ function openFile(path) {
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
-  navigate('dashboard');
+  const page = location.hash.slice(1);
+  navigate(document.getElementById(`page-${page}`) ? page : 'dashboard');
+  apiFetch('/profile/').then(profile => {
+    document.getElementById('setup-banner')?.classList.toggle('hidden', profile._configured);
+    document.getElementById('user-name').textContent = profile.identity?.name || 'Your workspace';
+  }).catch(() => {});
 });
+
+
+async function saveCandidateProfile(event) {
+  event.preventDefault();
+  const value = id => document.getElementById(id).value.trim();
+  const profile = structuredClone(candidateProfile || {});
+  profile.identity = {...profile.identity, name:value('profile-name'), first_name:value('profile-first-name'),
+    last_name:value('profile-last-name'), email:value('profile-email'), phone:value('profile-phone'), location:value('profile-location')};
+  profile.education = [{...(profile.education?.[0] || {}), institution:value('profile-university'),
+    degree:value('profile-degree'), graduation:value('profile-graduation')}];
+  profile.links = {...profile.links, linkedin:value('profile-linkedin'), github:value('profile-github')};
+  profile.skills = profile.skills || {};
+  for (const [id,cat] of [['profile-languages','languages'], ['profile-web-skills','web_and_backend'], ['profile-tools','tools']]) {
+    profile.skills[cat] = Object.fromEntries(value(id).split(',').map(s => s.trim()).filter(Boolean).map(s => [s,{status:'verified'}]));
+  }
+  try {
+    await apiFetch('/profile/', {method:'PUT',body:JSON.stringify(profile)});
+    showToast('Profile saved on this device.', 'success');
+    await loadProfile();
+  } catch (error) { showToast(`Could not save profile: ${error.message}`, 'error'); }
+}
+
+async function saveWorkspaceSettings() {
+  const body = {min_match_score:Number(document.getElementById('setting-min-score').value),
+    max_applications_per_day:Number(document.getElementById('setting-max-per-day').value),
+    ollama_model:document.getElementById('setting-ollama-model').value.trim()};
+  try { await apiFetch('/agent/settings',{method:'PUT',body:JSON.stringify(body)}); showToast('Settings saved.', 'success'); }
+  catch(error) { showToast(`Could not save settings: ${error.message}`, 'error'); }
+}
+
+async function createMasterResume() {
+  try { await apiFetch('/resume/master',{method:'POST'}); await loadResumePage(); showToast('Master source created. Review your facts before use.', 'success'); }
+  catch(error) { showToast(error.message, 'error'); }
+}

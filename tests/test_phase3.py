@@ -19,7 +19,7 @@ from resume.validator import ResumeCompilerValidator
 from agent.safety import is_blacklisted, assert_not_blacklisted
 
 
-profile = json.loads(Path("profile/master_profile.json").read_text())
+profile = json.loads(Path("tests/fixtures/profile.json").read_text())
 registry = json.loads(Path("profile/project_registry.json").read_text())
 
 
@@ -35,7 +35,7 @@ def test_latex_escape():
 
 def test_master_resume_ats_compliance():
     """Test that master_resume.tex scores 100% on ATS checks."""
-    master_tex = Path("resume/master_resume.tex").read_text()
+    master_tex = Path("tests/fixtures/resume.tex").read_text()
     res = ATSChecker.check_latex_source(master_tex)
     
     assert res["is_ats_compliant"] is True
@@ -136,8 +136,8 @@ def test_latex_renderer_output():
     
     # Assert standard LaTeX requirements
     assert r"\documentclass[10pt, letterpaper]{article}" in latex_code
-    assert "Swopnab Bikram Karki" in latex_code
-    assert "University of Texas at Arlington" in latex_code
+    assert "Example Candidate" in latex_code
+    assert "Example University in Arlington" in latex_code
     assert "Fall 2027" in latex_code
     assert r"\section{Education}" in latex_code
     assert r"\section{Technical Skills}" in latex_code

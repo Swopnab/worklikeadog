@@ -20,7 +20,7 @@ from ai.matcher import MatchCoordinator
 
 
 # Load test profile
-profile = json.loads(Path("profile/master_profile.json").read_text())
+profile = json.loads(Path("tests/fixtures/profile.json").read_text())
 registry = json.loads(Path("profile/project_registry.json").read_text())
 
 

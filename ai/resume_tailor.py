@@ -29,7 +29,7 @@ class ResumeTailor:
         self.verified_projects = {}
         for p in self.project_registry.get("projects", []):
             pid = p.get("id", "")
-            if pid and not is_blacklisted(pid):
+            if pid and not is_blacklisted(pid) and can_auto_place_on_resume(p.get("status", "")):
                 self.verified_projects[pid] = p
 
         # Build lookup table of verified skills
@@ -121,7 +121,7 @@ class ResumeTailor:
             assert_not_blacklisted(pid)
             proj_def = self.verified_projects[pid]
             # Use original verified bullets
-            orig_bullets = [b["text"] for b in proj_def.get("bullets", [])]
+            orig_bullets = [b["text"] for b in proj_def.get("bullets", []) if b.get("verified") is True]
             selected_projects.append({
                 "id": pid,
                 "display_name": proj_def.get("display_name"),
@@ -175,7 +175,7 @@ class ResumeTailor:
 
         selected_projects = []
         for _, pid, proj_def in top_3:
-            orig_bullets = [b["text"] for b in proj_def.get("bullets", [])]
+            orig_bullets = [b["text"] for b in proj_def.get("bullets", []) if b.get("verified") is True]
             selected_projects.append({
                 "id": pid,
                 "display_name": proj_def.get("display_name"),

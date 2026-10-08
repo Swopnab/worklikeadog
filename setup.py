@@ -1,86 +1,48 @@
 #!/usr/bin/env python3
-"""
-setup.py — Development bootstrap script
-Run: python3 setup.py
-"""
+"""Bootstrap the local workspace: python3 setup.py [--skip-browser]."""
+import argparse
+import os
+import shutil
 import subprocess
 import sys
-import shutil
+import venv
 from pathlib import Path
 
-def run(cmd, **kwargs):
-    print(f"  $ {cmd}")
-    return subprocess.run(cmd, shell=True, **kwargs)
+ROOT = Path(__file__).resolve().parent
 
-def check(name, cmd):
-    result = run(cmd, capture_output=True, text=True)
-    if result.returncode == 0:
-        print(f"  ✓ {name}: {result.stdout.strip()[:60]}")
-        return True
-    else:
-        print(f"  ✗ {name}: NOT FOUND")
-        return False
 
-print("\n🚀 JobAgent — Development Setup")
-print("=" * 50)
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--skip-browser', action='store_true', help='Skip the optional Chromium download')
+    args = parser.parse_args()
+    if sys.version_info < (3, 11):
+        parser.error('Python 3.11 or newer is required.')
+    os.chdir(ROOT)
+    environment = ROOT / '.venv'
+    python = environment / ('Scripts/python.exe' if os.name == 'nt' else 'bin/python')
+    print('WorkLikeADog — setting up your local workspace', flush=True)
+    if not python.exists():
+        venv.EnvBuilder(with_pip=True).create(environment)
+    subprocess.run([str(python), '-m', 'pip', 'install', '-r', 'requirements.txt'], check=True)
+    if not args.skip_browser:
+        subprocess.run([str(python), '-m', 'playwright', 'install', 'chromium'], check=True)
+    for directory in ['database', 'resume/generated', 'applications', 'logs', 'data']:
+        (ROOT / directory).mkdir(parents=True, exist_ok=True)
+    if not (ROOT / '.env').exists():
+        shutil.copyfile(ROOT / '.env.example', ROOT / '.env')
+    subprocess.run([str(python), '-c', 'import asyncio; from database.connection import init_db; asyncio.run(init_db())'], check=True)
+    subprocess.run([str(python), '-c', 'from agent.safety import is_blacklisted; assert is_blacklisted("Rock-Paper-Scissor")'], check=True)
+    print('\nSetup complete. Start the local workspace:')
+    print(f'  {python.relative_to(ROOT)} -m uvicorn backend.main:app --host 127.0.0.1 --port 8000')
+    print('  Open http://127.0.0.1:8000 and save your candidate profile.')
+    print('\nOptional: run Ollama with your configured model for local AI analysis.')
+    print('PDF generation requires a TeX distribution (pdflatex or xelatex).')
+    print('Application submission remains manual. Review every generated document.')
 
-print("\n📦 Checking core dependencies...")
-python_ok  = check("Python", "python3 --version")
-pip_ok     = check("pip", "pip --version")
-ollama_ok  = check("Ollama CLI", "ollama --version")
-latex_ok   = check("pdflatex", "pdflatex --version")
-node_ok    = check("Node.js", "node --version")
 
-print("\n📦 Installing Python packages...")
-run("pip install -q fastapi 'uvicorn[standard]' alembic aiosqlite python-dotenv structlog aiofiles beautifulsoup4 lxml xxhash python-dateutil sqlalchemy pydantic pydantic-settings httpx requests")
-
-print("\n📁 Creating required directories...")
-for directory in [
-    "database", "resume/generated", "applications", "logs",
-    "profile", "config", "frontend/css", "frontend/js",
-    "agent", "ai", "backend/api", "jobs/discovery",
-    "browser/sites", "tests/mock_job_sites",
-]:
-    Path(directory).mkdir(parents=True, exist_ok=True)
-    print(f"  ✓ {directory}/")
-
-print("\n⚙️  Setting up environment...")
-if not Path(".env").exists():
-    shutil.copy(".env.example", ".env")
-    print("  ✓ Created .env from .env.example")
-    print("  → Edit .env to configure your settings")
-else:
-    print("  ✓ .env already exists")
-
-print("\n🗄️  Initializing database...")
-try:
-    result = run("python3 -c \"import asyncio; from database.connection import init_db; asyncio.run(init_db()); print('DB OK')\"", capture_output=True, text=True)
-    if "DB OK" in result.stdout:
-        print("  ✓ SQLite database initialized with WAL mode")
-    else:
-        print("  ✗ Database init failed:", result.stderr[:200])
-except Exception as e:
-    print(f"  ✗ Error: {e}")
-
-print("\n🔒 Running safety checks...")
-result = run("python3 -c \"from agent.safety import is_blacklisted; assert is_blacklisted('Rock-Paper-Scissor'); print('Blacklist OK')\"", capture_output=True, text=True)
-if "Blacklist OK" in result.stdout:
-    print("  ✓ Rock-Paper-Scissor blacklist: ACTIVE")
-
-print("\n📋 Status Summary:")
-print(f"  Python:    {'✓' if python_ok else '✗ Required'}")
-print(f"  Ollama:    {'✓' if ollama_ok else '⚠ Install from https://ollama.ai — run: ollama pull llama3.2'}")
-print(f"  LaTeX:     {'✓' if latex_ok else '⚠ Install: brew install --cask basictex (required for Phase 3)'}")
-print(f"  Node.js:   {'✓' if node_ok else '⚠ Optional (not required for current phase)'}")
-
-print("\n🎯 Next Steps:")
-print("  1. Start the backend:  uvicorn backend.main:app --reload")
-print("  2. Open in browser:    http://localhost:8000")
-if not ollama_ok:
-    print("  3. Install Ollama:     https://ollama.ai")
-    print("     Then run:           ollama serve && ollama pull llama3.2")
-if not latex_ok:
-    print("  4. Install LaTeX:      brew install --cask basictex")
-    print("     (Required for Phase 3 resume generation)")
-
-print("\n✅ Setup complete!\n")
+if __name__ == '__main__':
+    try:
+        main()
+    except subprocess.CalledProcessError as error:
+        print(f'\nSetup stopped because a required step failed (exit {error.returncode}).', file=sys.stderr)
+        sys.exit(error.returncode)

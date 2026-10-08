@@ -28,7 +28,9 @@ from typing import Any, Dict, Optional, List
 
 logger = logging.getLogger(__name__)
 
-ARTIFACTS_ROOT = Path("applications")
+from config.settings import settings
+
+ARTIFACTS_ROOT = Path(settings.applications_dir)
 
 
 def _slug(text: str, max_len: int = 40) -> str:

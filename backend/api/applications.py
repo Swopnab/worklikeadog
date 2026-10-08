@@ -466,6 +466,14 @@ async def recompile_tailored_resume(app_id: int, db: AsyncSession = Depends(get_
 
     pdf_file = Path(comp_res["pdf_path"])
     val_res = ResumeCompilerValidator.validate_pdf(pdf_file)
+    if not val_res.get("valid"):
+        app.status = ApplicationStatus.RESUME_COMPILE_ERROR
+        app.resume_path = None
+        app.resume_hash = None
+        app.resume_compiler_error = val_res.get("error", "PDF did not pass validation.")
+        await db.commit()
+        return {"success": False, "status": app.status.value,
+                "error": app.resume_compiler_error, "validation": val_res}
     app.resume_path = str(pdf_file)
     app.resume_hash = val_res.get("pdf_hash")
     app.resume_compiler_error = None
@@ -478,8 +486,8 @@ async def recompile_tailored_resume(app_id: int, db: AsyncSession = Depends(get_
         "status": app.status.value,
         "pdf_path": str(pdf_file),
         "pdf_hash": app.resume_hash,
-        "page_count": val_res.get("page_count", 1),
-        "valid": val_res.get("valid", True),
+        "page_count": val_res.get("page_count", 0),
+        "valid": val_res.get("valid", False),
     }
 
 

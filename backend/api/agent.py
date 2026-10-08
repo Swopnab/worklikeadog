@@ -3,7 +3,7 @@ backend/api/agent.py
 Agent control endpoints: start, stop, pause, resume, force-kill, status.
 """
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, ConfigDict
 
 from agent.controller import agent_controller
 from agent.state_machine import get_current_state
@@ -45,6 +45,10 @@ async def get_agent_status():
 @router.post("/start")
 async def start_agent():
     """Start the agent. Runs crash recovery first."""
+    from ai.matcher import load_candidate_data
+    profile, _ = load_candidate_data()
+    if not profile.get("identity", {}).get("email"):
+        raise HTTPException(409, "Save your candidate profile before starting the agent.")
     result = await agent_controller.start()
     if not result["ok"]:
         raise HTTPException(status_code=409, detail=result["message"])
@@ -120,3 +124,26 @@ async def get_agent_settings():
         "ollama_base_url": settings.ollama_base_url,
         "browser_headless": settings.browser_headless,
     }
+
+
+class SettingsUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    min_match_score: int = Field(ge=0, le=100)
+    max_applications_per_day: int = Field(ge=1, le=100)
+    ollama_model: str = Field(min_length=1, max_length=100)
+
+@router.put("/settings")
+async def update_settings(request: SettingsUpdate):
+    import json
+    from pathlib import Path
+    values = request.model_dump()
+    path = Path(settings.runtime_settings_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(".json.tmp")
+    temporary.write_text(json.dumps(values, indent=2), encoding="utf-8")
+    temporary.replace(path)
+    for key, value in values.items():
+        setattr(settings, key, value)
+    from ai.ollama_provider import get_llm_provider
+    get_llm_provider().model = settings.ollama_model
+    return {"ok": True, "message": "Settings saved locally."}

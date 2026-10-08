@@ -199,19 +199,18 @@ class JobOrchestrator:
 
         # Compile resume to PDF
         tex_file = Path(tex_path)
-        comp_res = ResumeCompilerValidator.compile_latex(tex_file, tex_file.parent)
+        comp_res = ResumeCompilerValidator.generate_and_enforce_one_page(
+            profile, tailored_plan, tex_file.parent, base_name=tex_file.stem)
         pdf_path = None
-        if comp_res.get("pdf_path") and Path(comp_res["pdf_path"]).exists():
-            pdf_path = Path(comp_res["pdf_path"])
-        else:
-            # Fallback to existing valid master PDF if LaTeX compiler binary is absent on host
-            for fallback in [Path("PROJECT_SUMMARY.pdf"), Path("resume/master_resume.pdf")]:
-                if fallback.exists():
-                    pdf_path = fallback
-                    break
+        if comp_res.get("is_compiled") and comp_res.get("is_one_page") and comp_res.get("pdf_path"):
+            candidate_pdf = Path(comp_res["pdf_path"])
+            validation = ResumeCompilerValidator.validate_pdf(candidate_pdf)
+            if validation.get("valid"):
+                pdf_path = candidate_pdf
+        # A project summary or unrelated master PDF cannot replace a failed tailored résumé.
 
         if not pdf_path or not Path(pdf_path).exists():
-            error_detail = comp_res.get("error") or "Failed to compile LaTeX to PDF"
+            error_detail = comp_res.get("compile_error") or comp_res.get("notes") or "Tailored résumé PDF could not be compiled and validated"
             logger.error("Resume compilation failed for app #%d: %s", app.id, error_detail)
             app.status = ApplicationStatus.RESUME_COMPILE_ERROR
             app.resume_compiler_error = error_detail

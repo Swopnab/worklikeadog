@@ -36,7 +36,7 @@ class DiscoveryManager:
     """Manages multi-source job discovery, deduplication, and queue synchronization."""
 
     def __init__(self, sources: Optional[List[DiscoverySource]] = None):
-        self.sources = sources or [
+        self.sources = sources if sources is not None else [
             GreenhouseBoardScraper(),
             LeverBoardScraper(),
             GitHubFeedScraper(),

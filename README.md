@@ -1,148 +1,85 @@
-# JobAgent — AI-Powered Job Application Agent
+# WorkLikeADog
 
-A local-first, privacy-preserving autonomous job application agent for Swopnab Bikram Karki.
+A local job search companion: discover opportunities, compare them with verified experience, prepare tailored résumés, and organize applications for human review.
 
-> **Current Phase:** 1 of 10 — Foundation complete. See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for roadmap.
+**[Website](https://swopnab.github.io/worklikeadog/) · [Interactive demo](https://swopnab.github.io/worklikeadog/demo.html) · [Architecture](docs/ARCHITECTURE.md)**
 
----
+The public demo uses fictional jobs and browser storage. The full Python application runs on your computer and stores your profile, application records, and documents locally. It never auto-submits applications.
 
-## Quick Start
+## Quick start
 
-```bash
-# Clone / navigate to the project
+Requires **Python 3.11+**. Run these commands from the repository root:
+
+```sh
+git clone https://github.com/Swopnab/worklikeadog.git
 cd worklikeadog
-
-# Bootstrap development environment
 python3 setup.py
-
-# Start the backend
-uvicorn backend.main:app --reload
-
-# Open the dashboard
-open http://localhost:8000
+.venv/bin/python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
 
----
+On Windows, use `.venv\Scripts\python.exe` in place of `.venv/bin/python`. Open **http://127.0.0.1:8000**, go to **Candidate Profile**, and save your information. Only enter skills you can substantiate. Your private profile is created locally and ignored by Git.
 
-## Requirements
+1. Review `profile/project_registry.json`. It contains the repository owner's verified projects; replace it with your own evidence if using this for another candidate.
+2. Save your profile, education, links, and verified skills in the dashboard. Additional profile fields can be edited in the ignored `profile/master_profile.json` using the example schema.
+3. Open **Résumé**, create a master source from your profile, and review it. An existing master source is never overwritten by that action.
+4. Paste a job description into **Job Queue** to analyze it. Review eligibility, fit, and missing skills before preparing an application.
+5. Install a local TeX compiler to produce PDFs. A document is ready only after it compiles and passes one-page, text, and section checks.
+6. Review all artifacts and answers. Sign-in, MFA, CAPTCHA, legal answers, and final submission require your intervention.
 
-| Tool | Version | Purpose |
-|---|---|---|
-| Python | 3.11+ | Backend runtime |
-| pip | any | Package management |
-| Ollama | any | Local LLM inference |
-| BasicTeX | any | Resume PDF compilation (Phase 3) |
-| Playwright | 1.48+ | Browser automation (Phase 6) |
+For an environment without browser preparation, use `python3 setup.py --skip-browser`. Chromium can be added later with `.venv/bin/python -m playwright install chromium`.
 
-### Install Ollama
-```bash
-# Download from https://ollama.ai, then:
-ollama serve
-ollama pull llama3.2
+## What's implemented
+
+- Responsive dashboard with application history, filters, details, activity logs, analytics, and a persistent local profile/settings editor.
+- Manual URL/description import; GitHub feeds and Greenhouse/Lever board discovery. Some sources depend on third-party access and may return no results.
+- Local Ollama job parsing and résumé planning, with deterministic fallback when the model is unavailable.
+- Eligibility review, deterministic match scoring, fingerprint deduplication, verified project selection, and a permanent project blacklist.
+- LaTeX résumé generation, ATS source checks, PDF compilation, one-page reduction, and selectable-text validation.
+- Application artifact storage, state transitions, pause/stop/handoff controls, daily limits, checkpoints, and crash recovery.
+- Playwright form preparation with Greenhouse, Lever, Ashby, Workday, and generic adapters. Test fixtures cover mock forms; real employer flows are variable and require manual supervision.
+- Optional configured webhooks; disabled by default.
+- A public project website and interactive browser demo with search, list/board views, notes, keyword matching, and JSON/CSV exports.
+
+## Optional local tools
+
+**Ollama:** install from [Ollama](https://ollama.com/), start it, and pull the model named in `.env` (default `llama3.2`). The dashboard shows availability. The fallback can prepare structured results without Ollama, but is less capable at understanding job descriptions.
+
+**PDF compiler:** install a TeX distribution containing `pdflatex` or `xelatex`. On macOS, [BasicTeX](https://www.tug.org/mactex/morepackages.html) is one option. `latexmk` is supported when its underlying TeX engine is available. The app searches PATH and common TeX locations. Without a compiler it offers LaTeX source and reports the PDF as unverified; it does not invent a page count or attach an unrelated PDF.
+
+**Browser:** the bootstrap installs Playwright Chromium. Login and CAPTCHA are manual, and real ATS sites can change or block automation. Do not run the agent unattended against real employers.
+
+## Configuration and privacy
+
+`setup.py` copies `.env.example` without replacing an existing `.env`. The dashboard saves the model name, score threshold, and daily limit in ignored `data/runtime_settings.json`. Other options live in `.env`.
+
+Safety flags are enforced in code: `DRY_RUN=true`, `AUTO_SUBMIT=false`, `FINAL_SUBMISSION_ALLOWED=false`, and `REAL_APPLICATIONS_ENABLED=false`. Environment settings cannot enable automatic submission. Citizenship, sponsorship, work authorization, and other sensitive answers are always handed to the user.
+
+Bind the server to `127.0.0.1`. It is a personal local tool without multi-user authentication; do not expose its API to the public internet. Profile files, `.env`, cookies, databases, résumés, and generated application artifacts are ignored by Git. Ollama uses the configured endpoint; URL import, employer browser navigation, and enabled webhooks make the corresponding network requests. Third-party job content is untrusted data.
+
+The public website deploys **only `site/`**, so it contains no Python API, personal profile, database, or generated documents. Its demo data stays in that browser unless the visitor exports it. Fonts may load from Google Fonts, with system fallbacks.
+
+## Development and verification
+
+```sh
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -m playwright install chromium --only-shell
+.venv/bin/python -m pytest -q
+node --check frontend/js/app.js
+node --check site/demo.js
 ```
 
-### Install BasicTeX (for resume compilation)
-```bash
-brew install --cask basictex
-# Restart terminal, then:
-sudo tlmgr update --self && sudo tlmgr install latexmk
+Tests use a fictional candidate, temporary databases/artifacts, and mock employer forms. They do not need the owner's private profile or a running Ollama model. Compiler-dependent tests distinguish unavailable compilation from successful validation. CI installs TeX to exercise the compiled path as well.
+
+Preview the public website:
+
+```sh
+python3 -m http.server 4174 --bind 127.0.0.1 --directory site
 ```
 
-### Install Playwright (Phase 6)
-```bash
-pip install playwright
-playwright install chromium
-```
+Open `http://127.0.0.1:4174`. GitHub Actions publishes `site/` to GitHub Pages on changes to the site or its deployment workflow. The test workflow checks the backend and JavaScript on pushes and pull requests.
 
----
+## Limits and review requirements
 
-## Environment Variables
+This is an application preparation toolkit, not a guarantee of eligibility, interviews, or employer compatibility. Match scores are heuristics. Immigration/legal questions need personal review. A generated résumé must be checked against your real experience; editing the project registry can change its claims. The browser demo provides keyword overlap only, without AI, eligibility checks, PDF generation, or employer interactions.
 
-Copy `.env.example` to `.env` and configure:
-
-```env
-# IMPORTANT — safe defaults:
-DRY_RUN=true        # NEVER clicks Submit while developing
-AUTO_SUBMIT=false   # Must be explicitly enabled
-
-OLLAMA_MODEL=llama3.2
-MIN_MATCH_SCORE=65
-MAX_APPLICATIONS_PER_DAY=25
-```
-
-**Never commit `.env` to version control.**
-
----
-
-## Architecture
-
-```
-worklikeadog/
-├── backend/        FastAPI API server
-├── agent/          FSM controller, safety rules, crash recovery
-├── ai/             LLM provider abstraction (Ollama + future providers)
-├── browser/        Playwright automation + ATS site adapters
-├── resume/         LaTeX templates + renderer + validator
-├── profile/        master_profile.json, project_registry.json
-├── database/       SQLAlchemy models + WAL-mode SQLite
-├── jobs/           Discovery, eligibility, scoring, deduplication
-├── frontend/       Vanilla JS SPA dashboard
-└── docs/           Architecture docs
-```
-
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for full details.
-
----
-
-## Safety Rules (Non-Negotiable)
-
-1. **Never fabricate** technologies, metrics, or experience
-2. **Resume must be one page** — hard limit enforced
-3. **Rock-Paper-Scissor is permanently blacklisted** — never appears anywhere
-4. **DRY_RUN=true by default** — no submissions during development
-5. **CAPTCHA/MFA/login → always pause** → user handoff
-6. **Sensitive questions (citizenship, sponsorship, legal) → always pause**
-7. **Never submit until submission is confirmed** by ATS response
-8. **Never submit the same job twice** — fingerprint deduplication
-
-See [docs/AGENT_SAFETY.md](docs/AGENT_SAFETY.md) and [docs/RESUME_RULES.md](docs/RESUME_RULES.md).
-
----
-
-## Development Phases
-
-| Phase | Status | Description |
-|---|---|---|
-| 1 | ✅ Complete | Foundation: DB, profile, safety, FSM stubs, full UI |
-| 2 | 🔲 Next | Job parsing, eligibility engine, match scorer |
-| 3 | 🔲 | Resume tailoring, LaTeX generation, PDF compilation |
-| 4 | 🔲 | Application history, local artifact storage |
-| 5 | 🔲 | Full agent FSM with job processing loop |
-| 6 | 🔲 | Playwright + mock job sites + form detection |
-| 7 | 🔲 | Greenhouse, Lever, Ashby adapters |
-| 8 | 🔲 | Handoff system (login/MFA/CAPTCHA) |
-| 9 | 🔲 | Workday, iCIMS, SmartRecruiters adapters |
-| 10 | 🔲 | Overnight operation, notifications, n8n |
-
----
-
-## Privacy & Security
-
-- All data stored **locally only** (SQLite + filesystem)
-- No cloud sync, no third-party services in the critical path
-- Generated resumes and application data are **git-ignored**
-- Passwords never typed or stored by the agent
-- Webpage content is treated as **untrusted input** — never passed to LLM as system instructions
-
----
-
-## Known Limitations (Phase 1)
-
-- Resume PDF compilation requires BasicTeX (not yet installed)
-- AI features require Ollama running with a model pulled
-- Browser automation not yet implemented (Phase 6)
-- ATS adapters not yet implemented (Phase 7)
-- Job discovery is manual URL paste only (Phase 2+)
-- Application auto-submit is always OFF during development
-
-These are documented limitations, not bugs. See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for the roadmap.
+See [Agent Safety](docs/AGENT_SAFETY.md), [Résumé Rules](docs/RESUME_RULES.md), and [Application State Machine](docs/APPLICATION_STATE_MACHINE.md) for the enforced workflow.

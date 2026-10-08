@@ -8,7 +8,7 @@ import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -90,6 +90,14 @@ app.include_router(profile.router, prefix="/api/profile", tags=["Profile"])
 app.include_router(resume.router, prefix="/api/resume", tags=["Resume"])
 app.include_router(webhooks.router, prefix="/api/webhooks", tags=["Webhooks"])
 
+@app.get("/api/health")
+async def health():
+    from resume.validator import is_latex_compiler_available
+    available, compiler, _ = is_latex_compiler_available()
+    return {"status": "ok", "profile_configured": Path(settings.profile_path).exists(),
+            "latex_available": available, "compiler": compiler,
+            "dry_run": settings.dry_run, "auto_submit": settings.auto_submit}
+
 # ============================================================
 # Static frontend
 # ============================================================
@@ -105,7 +113,11 @@ if FRONTEND_DIR.exists():
     @app.get("/{path:path}", include_in_schema=False)
     async def serve_spa(path: str):
         """Serve the SPA for all non-API routes."""
-        file_path = FRONTEND_DIR / path
+        if path.startswith("api/"):
+            raise HTTPException(404, "API endpoint not found")
+        file_path = (FRONTEND_DIR / path).resolve()
+        if not file_path.is_relative_to(FRONTEND_DIR.resolve()):
+            raise HTTPException(404, "File not found")
         if file_path.exists() and file_path.is_file():
             return FileResponse(str(file_path))
         return FileResponse(str(FRONTEND_DIR / "index.html"))

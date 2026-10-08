@@ -1,0 +1,49 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "configured": false
+  },
+  "identity": {
+    "name": "",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "phone": "",
+    "location": "",
+    "city": "",
+    "state": "",
+    "country": ""
+  },
+  "education": [
+    {
+      "institution": "",
+      "degree": "",
+      "major": "",
+      "graduation": "",
+      "graduation_year": "",
+      "status": "current_student"
+    }
+  ],
+  "links": {
+    "linkedin": "",
+    "github": "",
+    "portfolio": ""
+  },
+  "skills": {
+    "languages": {},
+    "web_and_backend": {},
+    "ai_ml": {},
+    "cloud_databases": {},
+    "security": {},
+    "tools": {}
+  },
+  "certifications": [],
+  "preferences": {
+    "target_roles": [
+      "Software Engineering Intern"
+    ],
+    "relocation_willing": true,
+    "excluded_companies": [],
+    "excluded_keywords": []
+  }
+}

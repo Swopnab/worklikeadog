@@ -36,8 +36,8 @@ class Settings(BaseSettings):
     auto_submit: bool = Field(default=False)
     final_submission_allowed: bool = Field(default=False)
     real_applications_enabled: bool = Field(default=False)
-    min_match_score: int = Field(default=65)
-    max_applications_per_day: int = Field(default=25)
+    min_match_score: int = Field(default=65, ge=0, le=100)
+    max_applications_per_day: int = Field(default=25, ge=1, le=100)
     action_delay_seconds: float = Field(default=2.0)
 
     def model_post_init(self, __context):
@@ -55,6 +55,10 @@ class Settings(BaseSettings):
     applications_dir: str = Field(default="./applications")
     resume_generated_dir: str = Field(default="./resume/generated")
     logs_dir: str = Field(default="./logs")
+    profile_path: str = Field(default="profile/master_profile.json")
+    approved_answers_path: str = Field(default="profile/approved_answers.json")
+    master_resume_path: str = Field(default="resume/master_resume.tex")
+    runtime_settings_path: str = Field(default="data/runtime_settings.json")
 
     # Webhooks & n8n Integration
     webhook_enabled: bool = Field(default=False)
@@ -79,3 +83,14 @@ class Settings(BaseSettings):
 
 # Singleton — import this everywhere
 settings = Settings()
+# Restore only validated, non-sensitive preferences saved by the dashboard.
+_runtime_path = Path(settings.runtime_settings_path)
+if _runtime_path.exists():
+    import json
+    try:
+        _saved = json.loads(_runtime_path.read_text(encoding="utf-8"))
+        _candidate = Settings(**{**settings.model_dump(), **{key: _saved[key] for key in
+            ("min_match_score", "max_applications_per_day", "ollama_model") if key in _saved}})
+        settings = _candidate
+    except (ValueError, TypeError):
+        pass

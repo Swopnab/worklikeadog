@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JobAgent — AI-Powered Job Application Agent</title>
-  <meta name="description" content="Local-first autonomous job application agent. Discovers jobs, tailors your resume, and applies — with you always in control." />
+  <title>WorkLikeADog — Your application workspace</title>
+  <meta name="description" content="A local job application workspace for discovery, matching, résumé preparation, and manual review." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -15,7 +15,7 @@
     <!-- Left Sidebar -->
     <aside id="sidebar">
       <div id="sidebar-brand">
-        <div id="agent-icon" aria-label="JobAgent">
+        <div id="agent-icon" aria-label="WorkLikeADog">
           <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="28" height="28" rx="8" fill="#5B5BD6"/>
             <circle cx="14" cy="10" r="5" fill="white" opacity="0.9"/>
@@ -25,7 +25,7 @@
             <circle cx="17" cy="10" r="1.2" fill="#5B5BD6"/>
           </svg>
         </div>
-        <span id="brand-name">JobAgent</span>
+        <span id="brand-name">WorkLikeADog</span>
       </div>
 
       <nav id="sidebar-nav" aria-label="Main navigation">
@@ -36,13 +36,13 @@
             <rect x="2" y="11" width="7" height="7" rx="1.5"/>
             <rect x="11" y="11" width="7" height="7" rx="1.5"/>
           </svg>
-          Dashboard
+          <span class="nav-label">Dashboard</span>
         </button>
         <button class="nav-item" data-page="applications" id="nav-applications">
           <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
             <path d="M4 6h12M4 10h8M4 14h10"/>
           </svg>
-          Applications
+          <span class="nav-label">Applications</span>
           <span class="nav-badge" id="badge-applications"></span>
         </button>
         <button class="nav-item" data-page="jobs" id="nav-jobs">
@@ -50,7 +50,7 @@
             <rect x="3" y="6" width="14" height="11" rx="2"/>
             <path d="M7 6V4a2 2 0 014 0v2"/>
           </svg>
-          Jobs
+          <span class="nav-label">Jobs</span>
           <span class="nav-badge" id="badge-jobs"></span>
         </button>
         <button class="nav-item" data-page="resume" id="nav-resume">
@@ -59,27 +59,27 @@
             <path d="M13 2v4h4"/>
             <path d="M7 9h6M7 12h4"/>
           </svg>
-          Resume
+          <span class="nav-label">Resume</span>
         </button>
         <button class="nav-item" data-page="tailor" id="nav-tailor">
           <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
             <path d="M14.5 2.5l3 3-9 9H5.5v-3l9-9z"/>
             <path d="M12.5 4.5l3 3"/>
           </svg>
-          Tailor
+          <span class="nav-label">Tailor</span>
         </button>
         <button class="nav-item" data-page="learnings" id="nav-learnings">
           <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
             <path d="M2 14l5-5 4 4 4-6 3 3"/>
           </svg>
-          Learnings
+          <span class="nav-label">Learnings</span>
         </button>
         <button class="nav-item" data-page="profile" id="nav-profile">
           <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
             <circle cx="10" cy="7" r="4"/>
             <path d="M2 17c0-4 3.6-7 8-7s8 3 8 7"/>
           </svg>
-          Profile
+          <span class="nav-label">Profile</span>
         </button>
 
         <div class="nav-separator"></div>
@@ -89,23 +89,23 @@
             <rect x="3" y="10" width="14" height="8" rx="2"/>
             <path d="M7 10V7a3 3 0 016 0v3"/>
           </svg>
-          Job Site Logins
+          <span class="nav-label">Job Site Logins</span>
         </button>
         <button class="nav-item" data-page="settings" id="nav-settings">
           <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
             <circle cx="10" cy="10" r="3"/>
             <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42"/>
           </svg>
-          Settings
+          <span class="nav-label">Settings</span>
         </button>
       </nav>
 
       <div id="sidebar-footer">
         <div id="user-card">
-          <div id="user-avatar">SB</div>
+          <div id="user-avatar">W</div>
           <div id="user-info">
-            <div id="user-name">Swopnab Karki</div>
-            <div id="user-email">swopnabbikram@gmail.com</div>
+            <div id="user-name">Your workspace</div>
+            <div id="user-email">Stored on this device</div>
           </div>
         </div>
       </div>
@@ -113,6 +113,7 @@
 
     <!-- Main Content -->
     <main id="main-content">
+      <div id="setup-banner" class="setup-banner hidden"><div><strong>Make this workspace yours.</strong><p>Save your profile to start matching jobs and preparing résumés.</p></div><button class="btn btn-primary" onclick="navigate('profile')">Set up profile ↗</button></div>
 
       <!-- DASHBOARD PAGE -->
       <section id="page-dashboard" class="page active">
@@ -341,11 +342,11 @@
               <span class="badge badge-success" id="master-ats-badge">100% ATS COMPLIANT</span>
             </div>
             <div class="resume-meta">
-              <div class="meta-row"><span class="meta-label">Name</span><span class="meta-value">Swopnab Bikram Karki</span></div>
-              <div class="meta-row"><span class="meta-label">University</span><span class="meta-value">University of Texas at Arlington</span></div>
-              <div class="meta-row"><span class="meta-label">Degree</span><span class="meta-value">B.S. in Computer Science</span></div>
-              <div class="meta-row"><span class="meta-label">Graduation</span><span class="meta-value">Fall 2027</span></div>
-              <div class="meta-row"><span class="meta-label">Format</span><span class="meta-value">LaTeX / 1-Page Letterpaper</span></div>
+              <div class="meta-row"><span class="meta-label">Name</span><span class="meta-value" id="resume-profile-name">Set up your profile</span></div>
+              <div class="meta-row"><span class="meta-label">University</span><span class="meta-value" id="resume-profile-university">Set up your profile</span></div>
+              <div class="meta-row"><span class="meta-label">Degree</span><span class="meta-value" id="resume-profile-degree">Set up your profile</span></div>
+              <div class="meta-row"><span class="meta-label">Graduation</span><span class="meta-value" id="resume-profile-graduation">Set up your profile</span></div>
+              <div class="meta-row"><span class="meta-label">Format</span><span class="meta-value">LaTeX / Letterpaper (PDF checked after compilation)</span></div>
               <div class="meta-row"><span class="meta-label">LaTeX Compiler</span><span id="latex-status" class="meta-value status-muted">Checking...</span></div>
             </div>
             <div class="resume-projects">
@@ -366,6 +367,7 @@
               <button class="btn btn-secondary btn-sm" onclick="downloadMasterLatex()">Download .tex</button>
             </div>
             <div style="padding: 12px 16px;">
+              <button class="btn btn-secondary btn-sm" onclick="createMasterResume()">Create master résumé from profile</button>
               <textarea id="master-latex-viewer" class="text-area" rows="18" style="font-family: var(--font-mono); font-size: 11.5px; line-height: 1.45; background: var(--bg-main);" readonly placeholder="Loading master LaTeX..."></textarea>
             </div>
           </div>
@@ -402,7 +404,7 @@
               </button>
               <button class="btn btn-primary" onclick="generateTailoredLatex()">
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M5 3l8 5-8 5V3z"/></svg>
-                Generate Tailored LaTeX Resume
+                Generate Tailored LaTeX <span class="nav-label">Resume</span>
               </button>
             </div>
           </div>
@@ -442,9 +444,30 @@
             <h1 class="page-title">Profile</h1>
             <p class="page-subtitle">Verified candidate data used for all applications</p>
           </div>
-          <button class="btn btn-secondary" onclick="reloadProfile()">Reload from File</button>
+          <button class="btn btn-secondary" onclick="reloadProfile()">Refresh profile</button>
         </div>
 
+        <form id="profile-form" class="card profile-editor" onsubmit="saveCandidateProfile(event)">
+          <div class="card-header"><h2 class="card-title">Your candidate details</h2><span class="badge badge-muted">Saved locally</span></div>
+          <p class="form-note">Enter facts you can verify. Legal and work-authorization questions are reviewed manually.</p>
+          <div class="profile-form-grid">
+            <label>Full name<input id="profile-name" class="text-input" required autocomplete="name"></label>
+            <label>Email<input id="profile-email" class="text-input" type="email" required autocomplete="email"></label>
+            <label>First name<input id="profile-first-name" class="text-input" autocomplete="given-name"></label>
+            <label>Last name<input id="profile-last-name" class="text-input" autocomplete="family-name"></label>
+            <label>Phone<input id="profile-phone" class="text-input" type="tel" autocomplete="tel"></label>
+            <label>Location<input id="profile-location" class="text-input" placeholder="City, State"></label>
+            <label>University<input id="profile-university" class="text-input"></label>
+            <label>Degree<input id="profile-degree" class="text-input"></label>
+            <label>Expected graduation<input id="profile-graduation" class="text-input" placeholder="Fall 2027"></label>
+            <label>LinkedIn URL<input id="profile-linkedin" class="text-input" type="url"></label>
+            <label>GitHub URL<input id="profile-github" class="text-input" type="url"></label>
+            <label>Verified languages<input id="profile-languages" class="text-input" placeholder="Python, JavaScript, SQL"></label>
+            <label>Verified web &amp; backend skills<input id="profile-web-skills" class="text-input" placeholder="React, Flask, REST APIs"></label>
+            <label>Verified tools<input id="profile-tools" class="text-input" placeholder="Git, Docker, Linux"></label>
+          </div>
+          <button class="btn btn-primary" type="submit">Save profile</button>
+        </form>
         <div class="profile-layout">
           <div class="card">
             <div class="card-header"><h2 class="card-title">Identity</h2></div>
@@ -517,45 +540,41 @@
           <div class="card login-card" id="login-linkedin">
             <div class="login-header">
               <div class="login-site-name">LinkedIn</div>
-              <span class="status-chip status-unknown">Unknown</span>
+              <span class="status-chip status-unknown">Manual sign-in</span>
             </div>
             <p class="login-desc">Used for job discovery. Agent pauses if authentication required — you log in manually.</p>
             <div class="login-actions">
-              <button class="btn btn-secondary btn-sm">Open Browser</button>
-              <button class="btn btn-secondary btn-sm">Check Session</button>
+              <a class="btn btn-secondary btn-sm" href="https://www.linkedin.com/jobs/" target="_blank" rel="noopener">Open site ↗</a>
             </div>
           </div>
           <div class="card login-card" id="login-greenhouse">
             <div class="login-header">
               <div class="login-site-name">Greenhouse</div>
-              <span class="status-chip status-unknown">Unknown</span>
+              <span class="status-chip status-unknown">Manual sign-in</span>
             </div>
-            <p class="login-desc">ATS used by many companies. Adapter implemented in Phase 7.</p>
+            <p class="login-desc">Applications are prepared in the agent browser. Sign in manually when asked.</p>
             <div class="login-actions">
-              <button class="btn btn-secondary btn-sm">Open Browser</button>
-              <button class="btn btn-secondary btn-sm">Check Session</button>
+              <a class="btn btn-secondary btn-sm" href="https://www.greenhouse.com/" target="_blank" rel="noopener">Open site ↗</a>
             </div>
           </div>
           <div class="card login-card" id="login-lever">
             <div class="login-header">
               <div class="login-site-name">Lever</div>
-              <span class="status-chip status-unknown">Unknown</span>
+              <span class="status-chip status-unknown">Manual sign-in</span>
             </div>
-            <p class="login-desc">ATS used by many companies. Adapter implemented in Phase 7.</p>
+            <p class="login-desc">Applications are prepared in the agent browser. Sign in manually when asked.</p>
             <div class="login-actions">
-              <button class="btn btn-secondary btn-sm">Open Browser</button>
-              <button class="btn btn-secondary btn-sm">Check Session</button>
+              <a class="btn btn-secondary btn-sm" href="https://www.lever.co/" target="_blank" rel="noopener">Open site ↗</a>
             </div>
           </div>
           <div class="card login-card" id="login-workday">
             <div class="login-header">
               <div class="login-site-name">Workday</div>
-              <span class="status-chip status-unknown">Unknown</span>
+              <span class="status-chip status-unknown">Manual sign-in</span>
             </div>
-            <p class="login-desc">Complex ATS — adapter implemented in Phase 9.</p>
+            <p class="login-desc">Multi-step applications pause at boundaries for your review.</p>
             <div class="login-actions">
-              <button class="btn btn-secondary btn-sm">Open Browser</button>
-              <button class="btn btn-secondary btn-sm">Check Session</button>
+              <a class="btn btn-secondary btn-sm" href="https://www.myworkdayjobs.com/" target="_blank" rel="noopener">Open site ↗</a>
             </div>
           </div>
         </div>
@@ -570,7 +589,8 @@
         <div class="page-header">
           <div>
             <h1 class="page-title">Settings</h1>
-            <p class="page-subtitle">Agent configuration and safety controls</p>
+            <p class="page-subtitle">Application preferences and local AI connection</p>
+            <button class="btn btn-primary" onclick="saveWorkspaceSettings()">Save settings</button>
           </div>
         </div>
 
@@ -580,11 +600,11 @@
             <div class="setting-row">
               <div class="setting-info">
                 <div class="setting-label">Dry Run Mode</div>
-                <div class="setting-desc">Agent fills applications but NEVER clicks Submit. Recommended during setup.</div>
+                <div class="setting-desc">Preparation mode is always on. Final submission stays in your hands.</div>
               </div>
               <div class="setting-control">
                 <label class="toggle" id="toggle-dryrun">
-                  <input type="checkbox" id="setting-dryrun" checked onchange="updateSetting('dry_run', this.checked)" />
+                  <input type="checkbox" id="setting-dryrun" checked disabled onchange="updateSetting('dry_run', this.checked)" />
                   <span class="toggle-track"></span>
                 </label>
               </div>
@@ -592,11 +612,11 @@
             <div class="setting-row">
               <div class="setting-info">
                 <div class="setting-label">Auto-Submit</div>
-                <div class="setting-desc danger-text">Only enable when confident. Agent submits ONLY when ALL safety checks pass.</div>
+                <div class="setting-desc danger-text">Automatic submission is disabled. Review and submit on the employer’s site.</div>
               </div>
               <div class="setting-control">
                 <label class="toggle" id="toggle-autosubmit">
-                  <input type="checkbox" id="setting-autosubmit" onchange="updateSetting('auto_submit', this.checked)" />
+                  <input type="checkbox" id="setting-autosubmit" disabled onchange="updateSetting('auto_submit', this.checked)" />
                   <span class="toggle-track toggle-track-danger"></span>
                 </label>
               </div>
@@ -627,7 +647,7 @@
               <div class="setting-info">
                 <div class="setting-label">Ollama Base URL</div>
               </div>
-              <input type="text" class="setting-input setting-input-wide" id="setting-ollama-url" value="http://localhost:11434" />
+              <input type="text" class="setting-input setting-input-wide" id="setting-ollama-url" value="http://localhost:11434" readonly />
             </div>
             <div class="setting-row">
               <div class="setting-info">

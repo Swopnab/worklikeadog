@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import logging
 import hashlib
+import copy
 from pathlib import Path
 from typing import Dict, Any, Optional, Tuple, List
 
@@ -91,6 +92,7 @@ class ResumeCompilerValidator:
         pdf_name = tex_path.stem + ".pdf"
         expected_pdf_path = output_dir / pdf_name
 
+        expected_pdf_path.unlink(missing_ok=True)
         try:
             if compiler == "latexmk":
                 cmd = [
@@ -125,7 +127,7 @@ class ResumeCompilerValidator:
                     except Exception:
                         pass
 
-            if expected_pdf_path.exists() and expected_pdf_path.stat().st_size > 0:
+            if result.returncode == 0 and expected_pdf_path.exists() and expected_pdf_path.stat().st_size > 0:
                 with open(expected_pdf_path, "rb") as f:
                     pdf_hash = hashlib.sha256(f.read()).hexdigest()
                 return {
@@ -247,13 +249,13 @@ class ResumeCompilerValidator:
         output_dir.mkdir(parents=True, exist_ok=True)
         tex_path = output_dir / f"{base_name}.tex"
 
-        current_plan = tailored_plan.copy()
+        current_plan = copy.deepcopy(tailored_plan)
         reduction_step = 0
         max_reduction_steps = 4
         last_compile_result = {}
         last_pdf_val = {}
 
-        while reduction_step < max_reduction_steps:
+        while reduction_step <= max_reduction_steps:
             # 1. Render LaTeX
             latex_code = LaTeXResumeRenderer.render(profile, current_plan)
             tex_path.write_text(latex_code, encoding="utf-8")
@@ -262,7 +264,7 @@ class ResumeCompilerValidator:
             ats_result = ATSChecker.check_latex_source(latex_code)
 
             # 3. Check if compiler is available
-            is_avail, compiler = is_latex_compiler_available()
+            is_avail, compiler, _ = is_latex_compiler_available()
             if not is_avail:
                 # When compiler is not installed, return clean LaTeX with ATS analysis
                 return {
@@ -272,8 +274,8 @@ class ResumeCompilerValidator:
                     "is_compiled": False,
                     "compiler_available": False,
                     "ats_result": ats_result,
-                    "page_count": 1,  # baseline template is pre-engineered for exactly 1 page
-                    "is_one_page": True,
+                    "page_count": None,
+                    "is_one_page": False,
                     "reduction_steps_applied": reduction_step,
                     "notes": "LaTeX generated and ATS-verified. Install BasicTeX to enable automated local PDF rendering."
                 }
@@ -299,8 +301,7 @@ class ResumeCompilerValidator:
             pdf_path = Path(last_compile_result["pdf_path"])
             last_pdf_val = cls.validate_pdf(pdf_path)
 
-            if last_pdf_val["page_count"] == 1:
-                # Perfect! Exactly 1 page
+            if last_pdf_val.get("valid"):
                 return {
                     "latex_path": str(tex_path),
                     "latex_code": latex_code,
@@ -311,9 +312,23 @@ class ResumeCompilerValidator:
                     "page_count": 1,
                     "is_one_page": True,
                     "selectable_text": last_pdf_val["selectable_text"],
+                    "pdf_valid": True,
                     "reduction_steps_applied": reduction_step,
                     "notes": "Resume compiled and validated: exactly 1 page."
                 }
+
+            if last_pdf_val.get("page_count", 0) <= 1:
+                return {
+                    "latex_path": str(tex_path), "latex_code": latex_code,
+                    "pdf_path": None, "is_compiled": True, "compiler_available": True,
+                    "ats_result": ats_result, "page_count": last_pdf_val.get("page_count", 0),
+                    "is_one_page": last_pdf_val.get("page_count") == 1,
+                    "pdf_valid": False, "compile_error": last_pdf_val.get("error"),
+                    "reduction_steps_applied": reduction_step,
+                }
+
+            if reduction_step == max_reduction_steps:
+                break
 
             # If page count > 1, apply reduction rule:
             reduction_step += 1
@@ -341,11 +356,13 @@ class ResumeCompilerValidator:
         return {
             "latex_path": str(tex_path),
             "latex_code": latex_code,
-            "pdf_path": last_compile_result.get("pdf_path"),
+            "pdf_path": None,
             "is_compiled": last_compile_result.get("is_compiled", False),
             "compiler_available": True,
             "ats_result": ats_result,
-            "page_count": last_pdf_val.get("page_count", 1),
+            "page_count": last_pdf_val.get("page_count", 0),
             "is_one_page": last_pdf_val.get("page_count") == 1,
+            "pdf_valid": False,
+            "compile_error": last_pdf_val.get("error", "Resume did not pass PDF validation."),
             "reduction_steps_applied": reduction_step,
         }

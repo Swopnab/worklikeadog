@@ -17,17 +17,17 @@ from config.settings import settings
 
 router = APIRouter()
 
-MASTER_TEX_PATH = Path("resume/master_resume.tex")
-GENERATED_DIR = Path("resume/generated")
+MASTER_TEX_PATH = Path(settings.master_resume_path)
+GENERATED_DIR = Path(settings.resume_generated_dir)
 
 
 class ResumeTailorRequest(BaseModel):
     job_description: str
-    job_title: Optional[str] = "Software Engineer"
-    company: Optional[str] = "Company"
-    required_skills: Optional[list[str]] = []
-    preferred_skills: Optional[list[str]] = []
-    technologies: Optional[list[str]] = []
+    job_title: str = "Software Engineer"
+    company: str = "Company"
+    required_skills: list[str] = []
+    preferred_skills: list[str] = []
+    technologies: list[str] = []
 
 
 @router.get("/master")
@@ -37,7 +37,7 @@ async def get_master_resume():
         raise HTTPException(status_code=404, detail="master_resume.tex not found")
 
     tex_source = MASTER_TEX_PATH.read_text(encoding="utf-8")
-    is_avail, compiler = is_latex_compiler_available()
+    is_avail, compiler, _ = is_latex_compiler_available()
     ats_analysis = ATSChecker.check_latex_source(tex_source)
 
     return {
@@ -48,6 +48,21 @@ async def get_master_resume():
         "ats_analysis": ats_analysis,
         "latex_source": tex_source,
     }
+
+
+@router.post("/master")
+async def create_master_resume():
+    """Create a starting source from saved facts, without replacing an existing baseline."""
+    if MASTER_TEX_PATH.exists():
+        raise HTTPException(409, "A master résumé already exists. Edit that baseline directly.")
+    profile, registry = load_candidate_data()
+    if not profile.get("identity", {}).get("email"):
+        raise HTTPException(409, "Save your candidate profile first.")
+    tailor = ResumeTailor(profile, registry)
+    plan = tailor._deterministic_tailor({}, [])
+    MASTER_TEX_PATH.parent.mkdir(parents=True, exist_ok=True)
+    MASTER_TEX_PATH.write_text(LaTeXResumeRenderer.render(profile, plan), encoding="utf-8")
+    return {"ok": True, "message": "Master résumé source created. Review it before using it."}
 
 
 @router.post("/tailor")
@@ -61,6 +76,8 @@ async def generate_tailored_resume(request: ResumeTailorRequest):
         raise HTTPException(status_code=400, detail="job_description is required")
 
     profile, registry = load_candidate_data()
+    if not profile.get("identity", {}).get("email"):
+        raise HTTPException(409, "Save your candidate profile first.")
     tailor = ResumeTailor(profile, registry)
 
     job_analysis = {
@@ -100,6 +117,8 @@ async def generate_tailored_resume(request: ResumeTailorRequest):
         "page_count": result["page_count"],
         "is_one_page": result["is_one_page"],
         "notes": result.get("notes"),
+        "compile_error": result.get("compile_error"),
+        "pdf_valid": result.get("pdf_valid", False),
     }
 
 
@@ -123,10 +142,11 @@ async def compile_master_resume():
     val = ResumeCompilerValidator.validate_pdf(pdf_path)
 
     return {
-        "success": True,
+        "success": val.get("valid", False),
         "pdf_path": str(pdf_path),
         "compiler": result["compiler"],
         "validation": val,
+        "error": val.get("error"),
     }
 
 
@@ -134,9 +154,9 @@ async def compile_master_resume():
 async def download_file(path: str = Query(...)):
     """Serve generated resume files (.tex or .pdf)."""
     file_path = Path(path).resolve()
-    # Security check: must reside inside project directory
-    project_root = Path(".").resolve()
-    if not str(file_path).startswith(str(project_root)):
+    allowed_roots = [GENERATED_DIR.resolve(), Path(settings.applications_dir).resolve()]
+    allowed = file_path == MASTER_TEX_PATH.resolve() or any(file_path.is_relative_to(root) for root in allowed_roots)
+    if not allowed or file_path.suffix.lower() not in {".pdf", ".tex"}:
         raise HTTPException(status_code=403, detail="Access denied.")
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="File not found.")

@@ -1,0 +1,130 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "configured": true
+  },
+  "identity": {
+    "name": "Example Candidate",
+    "first_name": "Example",
+    "last_name": "Candidate",
+    "email": "candidate@example.com",
+    "phone": "202-555-0100",
+    "location": "Arlington, TX",
+    "city": "Arlington",
+    "state": "Texas",
+    "country": "United States"
+  },
+  "education": [
+    {
+      "institution": "Example University in Arlington",
+      "degree": "B.S. in Computer Science",
+      "major": "Computer Science",
+      "graduation": "Fall 2027",
+      "graduation_year": "2027",
+      "status": "current_student"
+    }
+  ],
+  "links": {
+    "linkedin": "https://linkedin.com/in/example",
+    "github": "https://github.com/example",
+    "portfolio": ""
+  },
+  "skills": {
+    "languages": {
+      "Python": {
+        "status": "verified"
+      },
+      "JavaScript": {
+        "status": "verified"
+      },
+      "TypeScript": {
+        "status": "verified"
+      },
+      "SQL": {
+        "status": "verified"
+      },
+      "Java": {
+        "status": "verified"
+      },
+      "C++": {
+        "status": "verified"
+      }
+    },
+    "web_and_backend": {
+      "React": {
+        "status": "verified"
+      },
+      "Django": {
+        "status": "verified"
+      },
+      "Flask": {
+        "status": "verified"
+      },
+      "REST APIs": {
+        "status": "verified"
+      },
+      "Node.js": {
+        "status": "verified"
+      },
+      "Django REST Framework": {
+        "status": "verified"
+      }
+    },
+    "ai_ml": {
+      "PyTorch": {
+        "status": "verified"
+      },
+      "Google MediaPipe": {
+        "status": "verified"
+      },
+      "Ollama": {
+        "status": "verified"
+      }
+    },
+    "cloud_databases": {
+      "AWS (S3, IAM)": {
+        "status": "verified"
+      },
+      "AWS S3": {
+        "status": "verified"
+      },
+      "Cloudflare Workers": {
+        "status": "verified"
+      },
+      "SQLite": {
+        "status": "verified"
+      }
+    },
+    "security": {
+      "JWT Authentication": {
+        "status": "verified"
+      },
+      "RBAC": {
+        "status": "verified"
+      }
+    },
+    "tools": {
+      "Git": {
+        "status": "verified"
+      },
+      "GitHub": {
+        "status": "verified"
+      },
+      "Docker": {
+        "status": "verified"
+      },
+      "Linux": {
+        "status": "verified"
+      }
+    }
+  },
+  "certifications": [],
+  "preferences": {
+    "target_roles": [
+      "Software Engineering Intern"
+    ],
+    "relocation_willing": true,
+    "excluded_companies": [],
+    "excluded_keywords": []
+  }
+}

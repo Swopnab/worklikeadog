@@ -27,21 +27,32 @@ class LaTeXResumeRenderer:
         certifications = tailored_plan.get("certifications", [])
 
         # 1. Header Information
-        name = escape(identity.get("name", "Swopnab Bikram Karki"))
-        phone = escape(identity.get("phone", "+1 986-600-8163"))
-        email = identity.get("email", "swopnabbikram@gmail.com")
-        linkedin = links.get("linkedin", "https://linkedin.com/in/swopnabbkarki")
-        github = links.get("github", "https://github.com/Swopnab")
+        name = escape(identity.get("name", ""))
+        phone = escape(identity.get("phone", ""))
+        email = identity.get("email", "")
+        linkedin = links.get("linkedin", "")
+        github = links.get("github", "")
 
         # Clean display links
         linkedin_disp = escape(linkedin.replace("https://", "").replace("http://", ""))
         github_disp = escape(github.replace("https://", "").replace("http://", ""))
 
+        contacts = []
+        if phone:
+            contacts.append(phone)
+        if email:
+            contacts.append(f"\\href{{mailto:{escape_url(email)}}}{{{escape(email)}}}")
+        if linkedin:
+            contacts.append(f"\\href{{{escape_url(linkedin)}}}{{{linkedin_disp}}}")
+        if github:
+            contacts.append(f"\\href{{{escape_url(github)}}}{{{github_disp}}}")
+        contact_line = " $|$ ".join(contacts)
+
         # 2. Education Information
-        institution = escape(education.get("institution", "University of Texas at Arlington"))
-        degree = escape(education.get("degree", "B.S. in Computer Science"))
-        location = escape(education.get("location", "Arlington, TX"))
-        graduation = escape(education.get("graduation", "Fall 2027"))
+        institution = escape(education.get("institution", ""))
+        degree = escape(education.get("degree", ""))
+        location = escape(education.get("location", ""))
+        graduation = escape(education.get("graduation", ""))
 
         # 3. Technical Skills
         def fmt_skill_line(category_label: str, skill_list: List[str]) -> str:
@@ -79,7 +90,7 @@ class LaTeXResumeRenderer:
 
             p_name = escape(p.get("display_name", ""))
             p_subtitle = escape(p.get("subtitle", ""))
-            p_years = escape(p.get("years", "2025--2026")).replace("-", "--") if "--" not in p.get("years", "") else escape(p.get("years", ""))
+            p_years = escape(p.get("years", "")).replace("-", "--") if "--" not in p.get("years", "") else escape(p.get("years", ""))
             tech_stack = ", ".join(escape(t) for t in p.get("tech_stack", []))
 
             bullets_latex = []
@@ -103,6 +114,10 @@ class LaTeXResumeRenderer:
         for c in certifications:
             cert_items.append(f"  \\item {escape(c)}")
         certs_block = "\n".join(cert_items)
+
+        certification_section = ""
+        if certs_block:
+            certification_section = "\\section{Certifications}\n\\begin{itemize}[leftmargin=*, label={}]\n" + certs_block + "\n\\end{itemize}"
 
         # Assemble Full Document
         latex_code = f"""\\documentclass[10pt, letterpaper]{{article}}
@@ -163,10 +178,7 @@ class LaTeXResumeRenderer:
 \\begin{{center}}
   {{\\LARGE \\textbf{{{name}}}}} \\\\[3pt]
   \\small
-  {phone} $|$
-  \\href{{mailto:{escape_url(email)}}}{{{escape(email)}}} $|$
-  \\href{{{escape_url(linkedin)}}}{{{linkedin_disp}}} $|$
-  \\href{{{escape_url(github)}}}{{{github_disp}}}
+  {contact_line}
 \\end{{center}}
 
 \\vspace{{-2pt}}
@@ -204,11 +216,7 @@ class LaTeXResumeRenderer:
 % ============================================================
 % CERTIFICATIONS
 % ============================================================
-\\section{{Certifications}}
-
-\\begin{{itemize}}[leftmargin=*, label={{}}]
-{certs_block}
-\\end{{itemize}}
+{certification_section}
 
 \\end{{document}}
 """

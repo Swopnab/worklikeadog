@@ -42,7 +42,7 @@ def test_field_mapper_safety_boundaries():
     # Level 1 Auto-fillable verified facts
     key, conf, val = mapper.classify_field("First Name")
     assert conf == FieldConfidence.LEVEL_1_AUTO
-    assert val == "Swopnab"
+    assert val == "Example"
 
     key, conf, val = mapper.classify_field("Email Address")
     assert conf == FieldConfidence.LEVEL_1_AUTO
@@ -58,12 +58,12 @@ def test_field_mapper_safety_boundaries():
 
     # Approved F-1 work authorization mappings
     key, conf, val = mapper.classify_field("Will you now or in the future require visa sponsorship?")
-    assert conf == FieldConfidence.LEVEL_1_AUTO
-    assert val == "NO"
+    assert conf == FieldConfidence.LEVEL_3_PAUSE
+    assert val is None
 
     key, conf, val = mapper.classify_field("Are you legally authorized to work in the United States?")
-    assert conf == FieldConfidence.LEVEL_1_AUTO
-    assert val == "YES"
+    assert conf == FieldConfidence.LEVEL_3_PAUSE
+    assert val is None
 
     # Level 3 MUST PAUSE (sensitive, clearance, salary, unfamiliar)
     key, conf, val = mapper.classify_field("Do you hold an active US Security Clearance?")
@@ -101,8 +101,8 @@ async def test_greenhouse_form_filling(tmp_path):
     res = await filler.fill_form(page)
 
     # First name, Last name, Email, Phone should be filled
-    assert await page.locator("#first_name").input_value() == "Swopnab"
-    assert await page.locator("#last_name").input_value() == "Karki"
+    assert await page.locator("#first_name").input_value() == "Example"
+    assert await page.locator("#last_name").input_value() == "Candidate"
     assert "@" in await page.locator("#email").input_value()
 
     # The legal work authorization question is auto-filled with YES
@@ -124,7 +124,7 @@ async def test_lever_form_filling(tmp_path):
     filler = LeverFiller()
     res = await filler.fill_form(page)
 
-    assert "Swopnab" in await page.locator("input[name='name']").input_value()
+    assert "Example" in await page.locator("input[name='name']").input_value()
     assert "@" in await page.locator("input[name='email']").input_value()
     assert "linkedin.com" in await page.locator("input[name='urls[LinkedIn]']").input_value()
 

@@ -126,7 +126,13 @@ async def test_orchestrator_process_mock_job(tmp_path):
         # Verify application record created in database
         app = await session.get(Application, job.application_id)
         assert app is not None
-        assert app.status in (ApplicationStatus.READY_FOR_REVIEW, ApplicationStatus.NEEDS_REVIEW, ApplicationStatus.NEEDS_ATTENTION, ApplicationStatus.READY)
+        from resume.validator import is_latex_compiler_available
+        if is_latex_compiler_available()[0]:
+            assert app.status in (ApplicationStatus.READY_FOR_REVIEW, ApplicationStatus.NEEDS_REVIEW, ApplicationStatus.NEEDS_ATTENTION, ApplicationStatus.READY)
+        else:
+            assert app.status == ApplicationStatus.RESUME_COMPILE_ERROR
+            assert app.resume_path is None
+            assert result["success"] is False
 
     # Cleanup state
     try:

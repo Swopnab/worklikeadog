@@ -90,6 +90,8 @@ async def analyze_job_description(request: JobAnalyzeRequest):
             location=request.location or "",
         )
         return result
+    except ValueError as e:
+        raise HTTPException(status_code=409, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 

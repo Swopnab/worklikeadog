@@ -76,7 +76,7 @@ class JobMatchEngine:
         # Available verified projects
         self.projects = []
         for p in self.project_registry.get("projects", []):
-            if not is_blacklisted(p.get("display_name", "")) and not is_blacklisted(p.get("id", "")):
+            if can_auto_place_on_resume(p.get("status", "")) and not is_blacklisted(p.get("display_name", "")) and not is_blacklisted(p.get("id", "")):
                 self.projects.append(p)
 
     def _normalize_skill(self, skill: str) -> str:

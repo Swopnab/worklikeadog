@@ -41,11 +41,11 @@ from browser.field_mapper import FieldMapper, FieldConfidence
 
 @pytest.fixture
 def sample_profile():
-    profile_path = Path("profile/master_profile.json")
+    profile_path = Path("tests/fixtures/profile.json")
     if profile_path.exists():
         return json.loads(profile_path.read_text(encoding="utf-8"))
     return {
-        "identity": {"name": "Swopnab Bikram Karki"},
+        "identity": {"name": "Example Candidate"},
         "education": [{"degree": "B.S. in Computer Science", "graduation": "Fall 2027"}]
     }
 
@@ -107,10 +107,10 @@ def test_04_rock_paper_scissor_hard_blacklist():
 
 def test_05_master_resume_one_page():
     """Verify master resume LaTeX source is well-formed and geometric budget fits 1 page."""
-    master_tex = Path("resume/master_resume.tex")
+    master_tex = Path("tests/fixtures/resume.tex")
     assert master_tex.exists()
     content = master_tex.read_text(encoding="utf-8")
-    assert "Swopnab Bikram Karki" in content
+    assert "Example Candidate" in content
     assert "SwopMobile" in content
     assert "CyberSteer" in content
     assert "AAURA-V1" in content
@@ -153,7 +153,7 @@ def test_06_to_11_real_physical_artifacts_created(tmp_path):
     assert analysis_file.exists()
 
     # 4. resume.tex & resume.pdf
-    master_tex = Path("resume/master_resume.tex").read_text(encoding="utf-8")
+    master_tex = Path("tests/fixtures/resume.tex").read_text(encoding="utf-8")
     dummy_pdf = tmp_path / "test_resume.pdf"
     dummy_pdf.write_bytes(b"%PDF-1.4 sample compiled resume")
 
@@ -235,29 +235,17 @@ def test_16_f1_work_authorization_field_mapping():
     """Verify approved F-1 work authorization questions map with high confidence and unknown ones pause."""
     mapper = FieldMapper()
 
-    # 1. "Are you authorized to work in the U.S. without sponsorship?" -> NO
-    _, conf1, val1 = mapper.classify_field(label="Are you authorized to work in the U.S. without sponsorship?")
-    assert conf1 == FieldConfidence.LEVEL_1_AUTO
-    assert val1 == "NO"
-
-    # 2. "Will you now or in the future require sponsorship?" -> NO
-    _, conf2, val2 = mapper.classify_field(label="Will you now or in the future require sponsorship for employment visa status?")
-    assert conf2 == FieldConfidence.LEVEL_1_AUTO
-    assert val2 == "NO"
-
-    # 3. "Are you legally authorized to work in the United States?" -> YES
-    _, conf3, val3 = mapper.classify_field(label="Are you legally authorized to work in the United States?")
-    assert conf3 == FieldConfidence.LEVEL_1_AUTO
-    assert val3 == "YES"
-
-    # 4. "Do you require CPT or OPT?" -> CPT
-    _, conf4, val4 = mapper.classify_field(label="Do you require CPT or OPT for this internship?")
-    assert conf4 == FieldConfidence.LEVEL_1_AUTO
-    assert val4 == "CPT"
-
-    # 5. Unfamiliar / ambiguous immigration question -> LEVEL 3 PAUSE
-    _, conf5, _ = mapper.classify_field(label="Will your work authorization require employer participation in an immigration process?")
-    assert conf5 == FieldConfidence.LEVEL_3_PAUSE
+    questions = [
+        "Are you authorized to work in the U.S. without sponsorship?",
+        "Will you now or in the future require sponsorship for employment visa status?",
+        "Are you legally authorized to work in the United States?",
+        "Do you require CPT or OPT for this internship?",
+        "Will your work authorization require employer participation in an immigration process?",
+    ]
+    for question in questions:
+        _, confidence, answer = mapper.classify_field(label=question)
+        assert confidence == FieldConfidence.LEVEL_3_PAUSE
+        assert answer is None
 
 
 def test_17_missing_artifact_integrity_failure():

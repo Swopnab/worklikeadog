@@ -1,0 +1,143 @@
+\documentclass[10pt, letterpaper]{article}
+
+\usepackage[
+  top=0.45in,
+  bottom=0.45in,
+  left=0.55in,
+  right=0.55in
+]{geometry}
+
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+\hypersetup{
+  colorlinks=true,
+  urlcolor=black,
+  linkcolor=black,
+  pdfborder={0 0 0}
+}
+
+% Section formatting
+\titleformat{\section}
+  {\normalfont\normalsize\bfseries\scshape}
+  {}
+  {0em}
+  {}
+  [\titlerule]
+
+\titlespacing*{\section}{0pt}{6pt}{3pt}
+
+% List formatting
+\setlist[itemize]{
+  leftmargin=*,
+  noitemsep,
+  topsep=1pt,
+  parsep=0pt,
+  partopsep=0pt,
+  label=\textbullet,
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\pagestyle{empty}
+
+\begin{document}
+
+% ============================================================
+% HEADER
+% ============================================================
+\begin{center}
+  {\LARGE \textbf{Example Candidate}} \\[3pt]
+  \small
+  202-555-0100 $|$
+  \href{mailto:candidate@example.com}{candidate@example.com} $|$
+  \href{https://linkedin.com/in/example}{linkedin.com/in/example} $|$
+  \href{https://github.com/example}{github.com/example}
+\end{center}
+
+\vspace{-2pt}
+
+% ============================================================
+% EDUCATION
+% ============================================================
+\section{Education}
+
+\noindent
+\textbf{Example University in Arlington} \hfill Arlington, TX \\
+\textit{B.S. in Computer Science} \hfill \textit{Expected Graduation: Fall 2027}
+
+\vspace{2pt}
+
+% ============================================================
+% TECHNICAL SKILLS
+% ============================================================
+\section{Technical Skills}
+
+\noindent
+\textbf{Languages:} Python, JavaScript \\
+\textbf{Tools:} Git
+
+\vspace{2pt}
+
+% ============================================================
+% PROJECTS
+% ============================================================
+\section{Projects}
+
+% Project: swopmobile
+\noindent
+\textbf{SwopMobile — JWT Authentication, RBAC \& AI Workspace} \hfill 2025–2026 \\
+\textit{Full-Stack Authentication and Multi-App Platform} \hfill \textit{JavaScript, Cloudflare Workers, Hono, D1, Flask, Ollama}
+\begin{itemize}
+  \item Built a serverless authentication platform supporting 3 RBAC roles with JWT access tokens, refresh-token rotation, protected routes, and per-user data isolation using Cloudflare Workers and D1.
+\end{itemize}
+
+\vspace{3pt}
+
+% Project: cybersteer
+\noindent
+\textbf{CyberSteer — Hand-Controlled Racing Game} \hfill 2026 \\
+\textit{Computer Vision / Browser Game} \hfill \textit{JavaScript, HTML5 Canvas, Google MediaPipe, CSS3}
+\begin{itemize}
+  \item Built a real-time browser racing game by mapping 21 MediaPipe hand landmarks into left, center, and right steering controls.
+\end{itemize}
+
+\vspace{3pt}
+
+% Project: aaura-v1
+\noindent
+\textbf{AAURA-V1 — Advanced AI-Utilized Responsive Assistant} \hfill 2024 \\
+\textit{Full-Stack AI Application} \hfill \textit{Python, Django, React, TypeScript, AWS, OpenAI API}
+\begin{itemize}
+  \item Built a full-stack AI assistant with Django REST Framework, React, JWT authentication, and OpenAI API integration.
+\end{itemize}
+
+\vspace{3pt}
+
+% Project: personal-job-tracker
+\noindent
+\textbf{Personal Job Tracker} \hfill 2025 \\
+\textit{Job Application Tracking Web App} \hfill \textit{JavaScript, HTML, CSS, GitHub Pages}
+\begin{itemize}
+  \item Built a responsive web app for tracking companies, job roles, and application statuses using vanilla JavaScript.
+\end{itemize}
+
+\vspace{2pt}
+
+% ============================================================
+% CERTIFICATIONS
+% ============================================================
+\section{Certifications}
+
+\begin{itemize}[leftmargin=*, label={}]
+
+\end{itemize}
+
+\end{document}
